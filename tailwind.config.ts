@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,27 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom colors for PurrfectVocab
+				purrple: {
+					light: '#C4B5FD',
+					DEFAULT: '#A78BFA',
+					dark: '#8B5CF6'
+				},
+				meowblue: {
+					light: '#BFDBFE',
+					DEFAULT: '#93C5FD',
+					dark: '#60A5FA'
+				},
+				pawpink: {
+					light: '#FECACA',
+					DEFAULT: '#FCA5A5',
+					dark: '#F87171'
+				},
+				whiskerbeige: {
+					light: '#FEF3C7',
+					DEFAULT: '#FDE68A',
+					dark: '#FBBF24'
 				}
 			},
 			borderRadius: {
@@ -84,11 +106,57 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'bounce-slight': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'wave': {
+					'0%': { transform: 'rotate(0deg)' },
+					'25%': { transform: 'rotate(15deg)' },
+					'50%': { transform: 'rotate(0deg)' },
+					'75%': { transform: 'rotate(-15deg)' },
+					'100%': { transform: 'rotate(0deg)' }
+				},
+				'blink': {
+					'0%, 100%': { transform: 'scaleY(1)' },
+					'50%': { transform: 'scaleY(0.1)' }
+				},
+				'scale-up': {
+					'0%': { transform: 'scale(0.8)', opacity: '0' },
+					'100%': { transform: 'scale(1)', opacity: '1' }
+				},
+				'slide-in': {
+					'0%': { transform: 'translateX(-100%)', opacity: '0' },
+					'100%': { transform: 'translateX(0)', opacity: '1' }
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
+				},
+				'card-flip': {
+					'0%': { transform: 'rotateY(0deg)' },
+					'100%': { transform: 'rotateY(180deg)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'bounce-slight': 'bounce-slight 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite',
+				'wave': 'wave 2s ease-in-out infinite',
+				'blink': 'blink 4s ease-in-out infinite',
+				'scale-up': 'scale-up 0.3s ease-out forwards',
+				'slide-in': 'slide-in 0.5s ease-out forwards',
+				'fade-in': 'fade-in 0.5s ease-out forwards',
+				'card-flip': 'card-flip 0.5s ease-out forwards'
+			},
+			fontFamily: {
+				'purrfect': ['Nunito', 'system-ui', 'sans-serif']
 			}
 		}
 	},

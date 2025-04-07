@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Trash2, VolumeUp } from 'lucide-react';
+import { Heart, Trash2, Volume } from 'lucide-react';
 
 interface FavoriteWord {
   id: string;
@@ -74,7 +74,7 @@ const FavoritesPage: React.FC = () => {
                       </span>
                     </CardTitle>
                     <Button variant="ghost" size="icon" onClick={() => speakWord(word.word)}>
-                      <VolumeUp className="h-4 w-4" />
+                      <Volume className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardHeader>

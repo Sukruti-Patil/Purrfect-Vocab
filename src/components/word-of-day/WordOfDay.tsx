@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Heart, VolumeUp } from 'lucide-react';
+import { Heart, Volume } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -76,7 +76,7 @@ export const WordOfDay: React.FC<WordOfDayProps> = ({ date }) => {
                 className="rounded-full hover:bg-muted"
                 onClick={speakWord}
               >
-                <VolumeUp className="h-5 w-5" />
+                <Volume className="h-5 w-5" />
               </Button>
               
               <Button 

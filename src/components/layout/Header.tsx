@@ -29,8 +29,23 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleTheme, isDarkTheme
       <div className="flex items-center gap-2">
         <MeowScoreIndicator score={score} />
         
-        <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-foreground">
-          {isDarkTheme ? <Sun size={18} /> : <Moon size={18} />}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={toggleTheme} 
+          className="text-foreground hover:bg-accent/20 transition-colors duration-300 group"
+        >
+          {isDarkTheme ? (
+            <Sun 
+              className="h-5 w-5 text-yellow-400 group-hover:rotate-180 transition-transform duration-500" 
+              strokeWidth={1.5} 
+            />
+          ) : (
+            <Moon 
+              className="h-5 w-5 text-indigo-600 group-hover:rotate-180 transition-transform duration-500" 
+              strokeWidth={1.5} 
+            />
+          )}
         </Button>
         
         <Button variant="outline" size="sm" className="gap-1">

@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import { useEffect, useState } from "react";
+import ChatBuddyPage from "./pages/ChatBuddyPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/chat-buddy" 
+            element={
+              <ProtectedRoute>
+                <ChatBuddyPage />
               </ProtectedRoute>
             } 
           />

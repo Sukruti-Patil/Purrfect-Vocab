@@ -11,6 +11,7 @@ import catThinking from '@/animations/cat-thinking.json';
 import catWaving from '@/animations/cat-waving.json';
 import catHappy from '@/animations/cat-happy.json';
 import catConfused from '@/animations/cat-confused.json';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -18,11 +19,20 @@ interface Message {
   text: string;
   timestamp: Date;
   wordData?: {
+    word?: string;
     meaning: string;
     synonyms: string[];
     antonyms: string[];
     example: string;
   };
+}
+
+interface WordResponse {
+  word: string;
+  meaning: string;
+  synonyms: string[];
+  antonyms: string[];
+  example: string;
 }
 
 export const CatBuddy: React.FC = () => {
@@ -47,6 +57,7 @@ export const CatBuddy: React.FC = () => {
   
   // Speech synthesis
   const synth = window.speechSynthesis;
+  const { toast } = useToast();
   
   const animationOptions = {
     loop: true,
@@ -86,48 +97,71 @@ export const CatBuddy: React.FC = () => {
       return;
     }
     
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognitionRef.current = new SpeechRecognition();
-    
-    recognitionRef.current.continuous = false;
-    recognitionRef.current.interimResults = false;
-    recognitionRef.current.lang = 'en-US';
-    
-    recognitionRef.current.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setMessage(transcript);
-      // Submit the voice message after receiving it
-      handleSendMessage(transcript);
-    };
-    
-    recognitionRef.current.onerror = (event) => {
-      console.error('Speech recognition error', event.error);
-      setIsListening(false);
-    };
-    
-    recognitionRef.current.onend = () => {
-      setIsListening(false);
-    };
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognitionAPI) {
+      recognitionRef.current = new SpeechRecognitionAPI();
+      
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setMessage(transcript);
+        // Submit the voice message after receiving it
+        handleSendMessage(transcript);
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event);
+        setIsListening(false);
+        toast({
+          title: "Recognition Error",
+          description: "There was an issue with the voice recognition feature.",
+          variant: "destructive",
+        });
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
     
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
     };
-  }, []);
+  }, [toast]);
 
   const toggleListening = () => {
     if (isListening) {
       recognitionRef.current?.abort();
       setIsListening(false);
     } else {
-      recognitionRef.current?.start();
-      setIsListening(true);
-      setAnimationState('thinking');
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+        setAnimationState('thinking');
+        
+        toast({
+          title: "Listening...",
+          description: "Speak now and I'll look up your word!",
+        });
+      } catch (error) {
+        console.error('Error starting recognition:', error);
+        toast({
+          title: "Recognition Error",
+          description: "Could not start voice recognition. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const speakText = (text: string) => {
+    if (!text) return;
+    
     if (synth.speaking) {
       synth.cancel();
     }
@@ -135,6 +169,20 @@ export const CatBuddy: React.FC = () => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    // Set voices - try to use a better voice if available
+    const voices = synth.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.name.includes('Google') || 
+      voice.name.includes('Premium') || 
+      voice.name.includes('Samantha')
+    );
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
     
     // Show talking animation while speaking
     utterance.onstart = () => {
@@ -145,41 +193,66 @@ export const CatBuddy: React.FC = () => {
       setAnimationState('default');
     };
     
+    utterance.onerror = () => {
+      setAnimationState('confused');
+      toast({
+        title: "Speech Error",
+        description: "There was an issue with text-to-speech. Please try again.",
+        variant: "destructive",
+      });
+    };
+    
     synth.speak(utterance);
   };
 
-  // Mock API for word lookup
-  const lookupWord = async (word: string) => {
+  // Dictionary API for word lookup
+  const lookupWord = async (word: string): Promise<WordResponse | null> => {
     try {
       setAnimationState('thinking');
       
-      // In a real app, this would be an API call to a dictionary service
-      // or your backend Flask service
-      const mockResponse = await new Promise<{
-        word: string;
-        meaning: string;
-        synonyms: string[];
-        antonyms: string[];
-        example: string;
-      }>((resolve) => {
-        setTimeout(() => {
-          // This is mock data - would come from API in real app
-          const responseData = {
-            word,
-            meaning: `The definition of "${word}" (simulated response)`,
-            synonyms: ['similar1', 'similar2', 'similar3'],
-            antonyms: ['opposite1', 'opposite2'],
-            example: `Here is an example sentence using "${word}" in context.`
-          };
-          resolve(responseData);
-        }, 1500);
+      // In a real production app, this would call your Flask backend API
+      // For now, we'll use a free dictionary API for demonstration
+      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.trim())}`);
+      
+      if (!response.ok) {
+        throw new Error('Word not found');
+      }
+      
+      const data = await response.json();
+      
+      if (!data || !data[0]) {
+        throw new Error('Invalid response format');
+      }
+      
+      // Extract relevant information
+      const entry = data[0];
+      const meaning = entry.meanings[0]?.definitions[0]?.definition || 'No definition found';
+      const example = entry.meanings[0]?.definitions[0]?.example || 'No example available';
+      
+      // Extract synonyms and antonyms
+      const synonyms: string[] = [];
+      const antonyms: string[] = [];
+      
+      entry.meanings.forEach((meaning: any) => {
+        if (meaning.synonyms && meaning.synonyms.length > 0) {
+          synonyms.push(...meaning.synonyms.slice(0, 3));
+        }
+        if (meaning.antonyms && meaning.antonyms.length > 0) {
+          antonyms.push(...meaning.antonyms.slice(0, 3));
+        }
       });
       
       setAnimationState('happy');
-      return mockResponse;
+      return {
+        word: entry.word,
+        meaning,
+        synonyms: synonyms.length > 0 ? synonyms : ['No synonyms found'],
+        antonyms: antonyms.length > 0 ? antonyms : ['No antonyms found'],
+        example: example
+      };
     } catch (error) {
-      setAnimationState('confused');
       console.error('Error looking up word:', error);
+      setAnimationState('confused');
       return null;
     }
   };
@@ -220,6 +293,7 @@ export const CatBuddy: React.FC = () => {
         text: formattedResponse,
         timestamp: new Date(),
         wordData: {
+          word: wordData.word,
           meaning: wordData.meaning,
           synonyms: wordData.synonyms,
           antonyms: wordData.antonyms,
@@ -231,7 +305,7 @@ export const CatBuddy: React.FC = () => {
       
       // Speak the definition
       setTimeout(() => {
-        speakText(wordData.meaning + ". For example: " + wordData.example);
+        speakText(`${wordData.word}. ${wordData.meaning}. For example: ${wordData.example}`);
       }, 500);
     } else {
       const errorResponse: Message = {
@@ -279,7 +353,7 @@ export const CatBuddy: React.FC = () => {
           >
             {msg.sender === 'cat' && msg.wordData ? (
               <div className="space-y-2">
-                <div className="font-bold">{msg.text.split('\n')[0]}</div>
+                <div className="font-bold">{msg.wordData.word || msg.text.split('\n')[0]}</div>
                 <div>
                   <p className="font-semibold">Meaning:</p>
                   <p>{msg.wordData.meaning}</p>
@@ -318,15 +392,27 @@ export const CatBuddy: React.FC = () => {
                   <p className="italic">{msg.wordData.example}</p>
                 </div>
                 
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="mt-2 bg-background/20 hover:bg-background/30"
-                  onClick={() => speakText(msg.wordData?.meaning + ". For example: " + msg.wordData?.example)}
-                >
-                  <Volume2 className="h-4 w-4 mr-2" />
-                  Pronounce
-                </Button>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="bg-background/20 hover:bg-background/30"
+                    onClick={() => speakText(msg.wordData?.meaning || "")}
+                  >
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Pronounce Definition
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="bg-background/20 hover:bg-background/30"
+                    onClick={() => speakText(msg.wordData?.example || "")}
+                  >
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Pronounce Example
+                  </Button>
+                </div>
               </div>
             ) : (
               <p>{msg.text}</p>

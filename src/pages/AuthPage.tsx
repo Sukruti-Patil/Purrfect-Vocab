@@ -1,265 +1,234 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useToast } from '@/components/ui/use-toast';
-import { Paw, Lock, Mail, User } from 'lucide-react';
-
-// Create schema for login form
-const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-});
-
-// Create schema for signup form
-const signupSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, LogIn, UserPlus, Cat } from 'lucide-react';
 
 const AuthPage: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { toast } = useToast();
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [signupName, setSignupName] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [signupLoading, setSignupLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Setup login form
-  const loginForm = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  const { toast } = useToast();
 
-  // Setup signup form
-  const signupForm = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
 
-  // Handle login submission
-  const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    setIsLoading(true);
-    
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false);
-      
-      // For demo purposes, just accept any valid form
-      localStorage.setItem('purrfect-user', JSON.stringify({
-        email: values.email,
-        isLoggedIn: true,
-      }));
-      
-      toast({
-        title: "Login Successful",
-        description: "Welcome to PurrfectVocab!",
-      });
-      
-      navigate('/');
+      // For demo purposes, accept any non-empty credentials
+      if (loginEmail.trim() && loginPassword.trim()) {
+        // Save user info in localStorage
+        localStorage.setItem('purrfect-user', JSON.stringify({
+          email: loginEmail,
+          isLoggedIn: true
+        }));
+        
+        toast({
+          title: "Welcome back!",
+          description: "You've successfully logged in.",
+        });
+        
+        navigate('/');
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Please check your credentials and try again.",
+          variant: "destructive",
+        });
+      }
+      setLoginLoading(false);
     }, 1500);
   };
 
-  // Handle signup submission
-  const onSignupSubmit = (values: z.infer<typeof signupSchema>) => {
-    setIsLoading(true);
-    
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSignupLoading(true);
+
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false);
-      
-      // For demo purposes, just accept any valid form
-      localStorage.setItem('purrfect-user', JSON.stringify({
-        email: values.email,
-        name: values.name,
-        isLoggedIn: true,
-      }));
-      
-      toast({
-        title: "Sign Up Successful",
-        description: "Welcome to PurrfectVocab!",
-      });
-      
-      navigate('/');
+      // Basic validation
+      if (signupEmail.trim() && signupPassword.trim() && signupName.trim()) {
+        if (signupPassword !== confirmPassword) {
+          toast({
+            title: "Passwords don't match",
+            description: "Please check your password and try again.",
+            variant: "destructive",
+          });
+          setSignupLoading(false);
+          return;
+        }
+        
+        // Save user info in localStorage
+        localStorage.setItem('purrfect-user', JSON.stringify({
+          email: signupEmail,
+          name: signupName,
+          isLoggedIn: true
+        }));
+        
+        toast({
+          title: "Account created!",
+          description: "Welcome to Purrfect Vocab!",
+        });
+        
+        navigate('/');
+      } else {
+        toast({
+          title: "Signup failed",
+          description: "Please fill all required fields and try again.",
+          variant: "destructive",
+        });
+      }
+      setSignupLoading(false);
     }, 1500);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-purrple-light/50 to-background">
-      <div className="flex flex-1 items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <div className="flex justify-center">
-              <div className="h-16 w-16 bg-purrple rounded-full flex items-center justify-center">
-                <Paw className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <h1 className="mt-4 text-3xl font-bold">PurrfectVocab</h1>
-            <p className="text-muted-foreground">Improve your vocabulary with a feline friend</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-purple-950 dark:to-purple-900 p-4">
+      <div className="max-w-md w-full">
+        <div className="flex flex-col items-center justify-center space-y-2 mb-8 text-center">
+          <div className="bg-primary text-primary-foreground p-3 rounded-full">
+            <Cat className="h-10 w-10" />
           </div>
-
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <h1 className="text-3xl font-bold">Purrfect Vocab</h1>
+          <p className="text-muted-foreground">Expand your vocabulary with our friendly learning tools</p>
+        </div>
+        
+        <Card>
+          <Tabs defaultValue="login">
+            <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-
+            
             <TabsContent value="login">
-              <Card>
+              <form onSubmit={handleLogin}>
                 <CardHeader>
                   <CardTitle>Welcome Back</CardTitle>
-                  <CardDescription>Login to continue your vocabulary journey</CardDescription>
+                  <CardDescription>Enter your credentials to access your account</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Form {...loginForm}>
-                    <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                      <FormField
-                        control={loginForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="meow@example.com" className="pl-10" {...field} />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={loginForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="******" type="password" className="pl-10" {...field} />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? "Logging in..." : "Login"}
-                      </Button>
-                    </form>
-                  </Form>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium">Email</label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="example@email.com" 
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="password" className="text-sm font-medium">Password</label>
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      placeholder="••••••••" 
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                    />
+                  </div>
                 </CardContent>
-                <CardFooter className="text-center text-sm text-muted-foreground">
-                  <p className="w-full">Need an account? Click on Sign Up</p>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={loginLoading}>
+                    {loginLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging In
+                      </>
+                    ) : (
+                      <>
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Login
+                      </>
+                    )}
+                  </Button>
                 </CardFooter>
-              </Card>
+              </form>
             </TabsContent>
             
             <TabsContent value="signup">
-              <Card>
+              <form onSubmit={handleSignup}>
                 <CardHeader>
                   <CardTitle>Create Account</CardTitle>
-                  <CardDescription>Join PurrfectVocab to start learning</CardDescription>
+                  <CardDescription>Enter your information to register</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Form {...signupForm}>
-                    <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
-                      <FormField
-                        control={signupForm.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="Mittens Purrington" className="pl-10" {...field} />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={signupForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="meow@example.com" className="pl-10" {...field} />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={signupForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="******" type="password" className="pl-10" {...field} />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={signupForm.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Confirm Password</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="******" type="password" className="pl-10" {...field} />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? "Creating Account..." : "Sign Up"}
-                      </Button>
-                    </form>
-                  </Form>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium">Full Name</label>
+                    <Input 
+                      id="name" 
+                      placeholder="John Doe" 
+                      value={signupName}
+                      onChange={(e) => setSignupName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="signup-email" className="text-sm font-medium">Email</label>
+                    <Input 
+                      id="signup-email" 
+                      type="email" 
+                      placeholder="example@email.com" 
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="signup-password" className="text-sm font-medium">Password</label>
+                    <Input 
+                      id="signup-password" 
+                      type="password" 
+                      placeholder="••••••••" 
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="confirm-password" className="text-sm font-medium">Confirm Password</label>
+                    <Input 
+                      id="confirm-password" 
+                      type="password" 
+                      placeholder="••••••••" 
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
                 </CardContent>
-                <CardFooter className="text-center text-sm text-muted-foreground">
-                  <p className="w-full">Already have an account? Click on Login</p>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={signupLoading}>
+                    {signupLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Sign Up
+                      </>
+                    )}
+                  </Button>
                 </CardFooter>
-              </Card>
+              </form>
             </TabsContent>
           </Tabs>
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export const BotpressChatBuddy: React.FC = () => {
         
         <iframe 
           key={iframeKey}
-          src="https://cdn.botpress.cloud/webchat/v2.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/04/12/18/20250412180317-PBLFG2DD.json" 
+          src="https://cdn.botpress.cloud/webchat/v2.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/04/14/10/20250414102350-RYFL60Q4.json" 
           className="w-full h-full"
           onLoad={() => setIsLoaded(true)}
           allow="microphone; camera"

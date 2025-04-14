@@ -2,82 +2,89 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
+    --card-foreground: 222.2 84% 4.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    --primary: 266 100% 64%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 260 66% 49%;
+    --primary-foreground: 210 40% 98%;
+    --purrple: 260 66% 49%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
     --radius: 0.5rem;
-
-    /* Custom Colors */
-    --purrple: 266 100% 64%;
-    --purrple-dark: 266 100% 40%;
-    --purrple-light: 266 100% 74%;
-    --meowblue: 195 100% 50%;
-    --meowblue-dark: 195 100% 30%;
-    --meowblue-light: 195 100% 70%;
-    --pawpink: 340 100% 65%;
-    --pawpink-dark: 340 100% 45%;
-    --pawpink-light: 340 100% 85%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 260 66% 49%;
+    --primary-foreground: 210 40% 98%;
+    --purrple: 260 66% 49%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+  /* Style the Botpress webchat container */
+  #bp-web-widget-container {
+    height: 500px !important;
+    width: 100% !important;
+  }
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 266 100% 74%;
-    --primary-foreground: 240 5.9% 10%;
-
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+  /* Make sure the webchat is full width */
+  .bp-widget-instance {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    bottom: auto !important;
+    right: auto !important;
+    border-radius: var(--radius) !important;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
@@ -87,85 +94,34 @@
   }
 }
 
-@layer components {
-  /* Cat ear shape */
-  .cat-ear {
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+/* Animation utilities */
+@keyframes scale-up {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
   }
-
-  /* Flashcard flip animation */
-  .flashcard {
-    perspective: 1000px;
-    cursor: pointer;
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
+}
 
-  .flashcard-inner {
-    position: relative;
-    width: 100%;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
+.animate-scale-up {
+  animation: scale-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  .flashcard.flipped .flashcard-inner {
-    transform: rotateY(180deg);
-  }
-
-  .flashcard-front,
-  .flashcard-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-
-  .flashcard-back {
-    transform: rotateY(180deg);
-  }
-
-  /* Additional animations */
-  @keyframes scale-up {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes wave {
-    0% {
-      transform: translateY(0) rotate(0deg);
-    }
-    50% {
-      transform: translateY(-15px) rotate(15deg);
-    }
-    100% {
-      transform: translateY(0) rotate(0deg);
-    }
-  }
-
-  @keyframes blink {
-    0%, 100% {
-      transform: scaleY(1);
-    }
-    50% {
-      transform: scaleY(0.1);
-    }
-  }
-
-  .animate-wave {
-    animation: wave 1.5s ease-in-out infinite;
-  }
-
-  .animate-blink {
-    animation: blink 0.3s ease-in-out;
-  }
-
-  .animate-scale-up {
-    animation: scale-up 0.3s ease-out forwards;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CatBuddy } from '@/components/cat-buddy/CatBuddy';
+import { BotpressChatBuddy } from '@/components/cat-buddy/BotpressChatBuddy';
 import { Card } from '@/components/ui/card';
 
 const ChatBuddyPage: React.FC = () => {
@@ -8,11 +8,11 @@ const ChatBuddyPage: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold">Chat Buddy</h1>
-        <p className="text-muted-foreground">Talk with Meowford, your vocabulary assistant</p>
+        <p className="text-muted-foreground">Your vocabulary assistant</p>
       </div>
       
-      <Card className="overflow-hidden">
-        <CatBuddy />
+      <Card className="overflow-hidden p-4">
+        <BotpressChatBuddy />
       </Card>
     </div>
   );

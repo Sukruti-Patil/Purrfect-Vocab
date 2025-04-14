@@ -11,7 +11,7 @@ const ChatBuddyPage: React.FC = () => {
         <p className="text-muted-foreground">Your vocabulary assistant</p>
       </div>
       
-      <Card className="overflow-hidden p-4">
+      <Card className="p-4">
         <BotpressChatBuddy />
       </Card>
     </div>

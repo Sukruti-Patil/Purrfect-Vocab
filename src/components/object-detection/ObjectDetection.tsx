@@ -2,7 +2,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import * as cocossd from '@tensorflow-models/coco-ssd';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Eye, EyeOff, RefreshCw } from 'lucide-react';

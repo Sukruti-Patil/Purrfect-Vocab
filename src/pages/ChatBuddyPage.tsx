@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { BotpressChatBuddy } from '@/components/cat-buddy/BotpressChatBuddy';
+import { CatBuddy } from '@/components/cat-buddy/CatBuddy';
 import { ObjectDetection } from '@/components/object-detection/ObjectDetection';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageSquare, Camera } from 'lucide-react';
+import { MessageSquare, Camera, Cat } from 'lucide-react';
 
 const ChatBuddyPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('chat');
@@ -12,7 +12,7 @@ const ChatBuddyPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold">Chat Buddy</h1>
+        <h1 className="text-3xl font-bold">Meowford</h1>
         <p className="text-muted-foreground">Your vocabulary assistant</p>
       </div>
       
@@ -20,8 +20,8 @@ const ChatBuddyPage: React.FC = () => {
         <Tabs defaultValue="chat" onValueChange={setActiveTab} value={activeTab}>
           <TabsList className="mb-4">
             <TabsTrigger value="chat">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Chat
+              <Cat className="h-4 w-4 mr-2" />
+              Chat with Meowford
             </TabsTrigger>
             <TabsTrigger value="object-detection">
               <Camera className="h-4 w-4 mr-2" />
@@ -30,7 +30,7 @@ const ChatBuddyPage: React.FC = () => {
           </TabsList>
           
           <TabsContent value="chat">
-            <BotpressChatBuddy />
+            <CatBuddy />
           </TabsContent>
           
           <TabsContent value="object-detection">

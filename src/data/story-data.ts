@@ -51,7 +51,7 @@ export const storyData: Story[] = [
     difficulty: 'beginner',
     targetWords: [
       { word: 'abundant', meaning: 'Present in great quantity' },
-      { word: 'diligently', meaning: 'In a way that shows care and conscientiousness in one's work or duties' },
+      { word: 'diligently', meaning: 'In a way that shows care and conscientiousness in one\'s work or duties' },
       { word: 'harvest', meaning: 'The process or period of gathering crops' },
       { word: 'bountiful', meaning: 'Large in quantity; abundant' },
       { word: 'refreshing', meaning: 'Serving to refresh or reinvigorate someone' },

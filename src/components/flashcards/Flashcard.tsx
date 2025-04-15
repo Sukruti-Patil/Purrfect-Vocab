@@ -28,6 +28,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevio
   const [isFlipped, setIsFlipped] = useState(false);
   const [showExtraInfo, setShowExtraInfo] = useState(false);
   
+  // Now using handleFlip as the direct click handler
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
@@ -60,7 +61,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevio
   return (
     <div className="w-full max-w-md mx-auto">
       <div 
-        className={cn("flashcard relative", isFlipped ? "flipped" : "")}
+        className={cn("flashcard relative cursor-pointer", isFlipped ? "flipped" : "")}
         onClick={handleFlip}
       >
         <div className="flashcard-inner h-[420px] sm:h-[480px]">
@@ -85,7 +86,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevio
                 <Volume className="h-4 w-4 mr-2" />
                 Pronounce
               </Button>
-              <p className="text-sm text-white/70 italic">(Tap to flip)</p>
+              <p className="text-sm text-white/70 italic">(Click to flip)</p>
             </div>
           </div>
           

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { fetchObjectInfo } from './object-info-service';
+import { useToast } from '@/hooks/use-toast';
 
 interface Detection {
   bbox: [number, number, number, number];
@@ -36,6 +37,7 @@ export const ObjectDetection: React.FC = () => {
   const [selectedObject, setSelectedObject] = useState<string | null>(null);
   const [objectInfo, setObjectInfo] = useState<ObjectInfo | null>(null);
   const [isObjectInfoLoading, setIsObjectInfoLoading] = useState(false);
+  const { toast } = useToast();
 
   const loadModel = async () => {
     try {
@@ -45,8 +47,17 @@ export const ObjectDetection: React.FC = () => {
       const loadedModel = await cocossd.load();
       setModel(loadedModel);
       console.log('Model loaded successfully');
+      toast({
+        title: "Model loaded",
+        description: "Object detection model is ready to use",
+      });
     } catch (error) {
       console.error('Failed to load model:', error);
+      toast({
+        title: "Model loading failed",
+        description: "Please try reloading or check your connection",
+        variant: "destructive",
+      });
     } finally {
       setIsModelLoading(false);
     }
@@ -123,6 +134,10 @@ export const ObjectDetection: React.FC = () => {
   const toggleDetection = () => {
     if (!isDetecting) {
       setIsDetecting(true);
+      toast({
+        title: "Detection started",
+        description: "Point your camera at objects to identify them",
+      });
     } else {
       setIsDetecting(false);
     }
@@ -135,8 +150,19 @@ export const ObjectDetection: React.FC = () => {
     try {
       const info = await fetchObjectInfo(objectClass);
       setObjectInfo(info);
+      
+      // Show toast with meaning for quick reference
+      toast({
+        title: `${info.word}`,
+        description: info.meaning,
+      });
     } catch (error) {
       console.error('Error fetching object info:', error);
+      toast({
+        title: "Information error",
+        description: "Could not load details for this object",
+        variant: "destructive",
+      });
     } finally {
       setIsObjectInfoLoading(false);
     }
@@ -227,7 +253,7 @@ export const ObjectDetection: React.FC = () => {
         </div>
         
         <div className="w-full lg:w-1/2 space-y-4">
-          <div className="overflow-auto max-h-[200px] border rounded-md p-2">
+          <div className="overflow-auto max-h-[200px] border rounded-md p-4">
             <h3 className="font-medium mb-2">Detected Objects</h3>
             {detections.length > 0 ? (
               <ul className="space-y-2">
@@ -269,7 +295,10 @@ export const ObjectDetection: React.FC = () => {
                         <span className="text-sm text-muted-foreground">/{objectInfo.pronunciation}/</span>
                       )}
                     </div>
-                    <p className="text-sm">{objectInfo.meaning}</p>
+                    <div className="mt-1 p-2 bg-muted rounded-md">
+                      <h5 className="font-medium text-sm">Meaning:</h5>
+                      <p className="text-sm">{objectInfo.meaning}</p>
+                    </div>
                   </div>
                   
                   <div>

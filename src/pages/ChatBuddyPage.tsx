@@ -1,9 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BotpressChatBuddy } from '@/components/cat-buddy/BotpressChatBuddy';
+import { ObjectDetection } from '@/components/object-detection/ObjectDetection';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MessageSquare, Camera } from 'lucide-react';
 
 const ChatBuddyPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('chat');
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -12,7 +17,26 @@ const ChatBuddyPage: React.FC = () => {
       </div>
       
       <Card className="p-4">
-        <BotpressChatBuddy />
+        <Tabs defaultValue="chat" onValueChange={setActiveTab} value={activeTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="chat">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Chat
+            </TabsTrigger>
+            <TabsTrigger value="object-detection">
+              <Camera className="h-4 w-4 mr-2" />
+              Object Detection
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="chat">
+            <BotpressChatBuddy />
+          </TabsContent>
+          
+          <TabsContent value="object-detection">
+            <ObjectDetection />
+          </TabsContent>
+        </Tabs>
       </Card>
     </div>
   );

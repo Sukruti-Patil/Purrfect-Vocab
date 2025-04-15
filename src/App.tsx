@@ -4,11 +4,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
-import { useEffect, useState } from "react";
 import ChatBuddyPage from "./pages/ChatBuddyPage";
+import FlashcardsPage from "./pages/FlashcardsPage";
+import StoriesPage from "./pages/StoriesPage";
+import ProgressPage from "./pages/ProgressPage";
+import Layout from "./components/layout/Layout";
 
 const App = () => {
   // Create QueryClient inside the component
@@ -38,8 +42,8 @@ const App = () => {
       return <Navigate to="/auth" />;
     }
 
-    // If authenticated, show the protected content
-    return children;
+    // If authenticated, show the protected content wrapped in layout
+    return <Layout>{children}</Layout>;
   };
 
   return (
@@ -63,6 +67,30 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <ChatBuddyPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/flashcards" 
+              element={
+                <ProtectedRoute>
+                  <FlashcardsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/stories" 
+              element={
+                <ProtectedRoute>
+                  <StoriesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/progress" 
+              element={
+                <ProtectedRoute>
+                  <ProgressPage />
                 </ProtectedRoute>
               } 
             />

@@ -1,29 +1,61 @@
 
-import React from 'react';
-import { Star } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import React, { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import { Cat } from 'lucide-react';
 
 interface MeowScoreIndicatorProps {
   score: number;
 }
 
 export const MeowScoreIndicator: React.FC<MeowScoreIndicatorProps> = ({ score }) => {
-  // Calculate level based on score (every 100 points is a new level)
-  const level = Math.floor(score / 100) + 1;
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [displayScore, setDisplayScore] = useState(score);
   
-  // Calculate progress to next level (0-100)
-  const progressToNextLevel = score % 100;
+  useEffect(() => {
+    if (score !== displayScore) {
+      setIsAnimating(true);
+      setDisplayScore(score);
+      
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [score, displayScore]);
+  
+  useEffect(() => {
+    // Listen for score updates from other components
+    const handleScoreUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.newScore) {
+        setDisplayScore(customEvent.detail.newScore);
+        setIsAnimating(true);
+        
+        setTimeout(() => {
+          setIsAnimating(false);
+        }, 1000);
+      }
+    };
+    
+    window.addEventListener('scoreUpdated', handleScoreUpdate);
+    
+    return () => {
+      window.removeEventListener('scoreUpdated', handleScoreUpdate);
+    };
+  }, []);
   
   return (
-    <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-full">
-      <Star className="h-4 w-4 text-whiskerbeige-dark fill-whiskerbeige-dark" />
-      <div className="flex flex-col">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-semibold">Level {level}</span>
-          <span className="text-xs text-muted-foreground">{score} pts</span>
-        </div>
-        <Progress value={progressToNextLevel} className="h-1 w-16" />
-      </div>
+    <div className="flex items-center gap-1 bg-primary/10 px-2.5 py-1 rounded-full">
+      <Cat className="h-4 w-4 text-primary" />
+      <span 
+        className={cn(
+          "font-medium text-sm transition-all",
+          isAnimating ? "animate-scale-up text-primary" : "text-foreground"
+        )}
+      >
+        {displayScore}
+      </span>
     </div>
   );
 };

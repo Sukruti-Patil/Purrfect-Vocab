@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { CatBuddy } from '@/components/cat-buddy/CatBuddy';
+import { BotpressChatBuddy } from '@/components/cat-buddy/BotpressChatBuddy';
 import { ObjectDetection } from '@/components/object-detection/ObjectDetection';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageSquare, Camera, Cat } from 'lucide-react';
+import { Camera, Cat } from 'lucide-react';
 
 const ChatBuddyPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('chat');
@@ -30,7 +30,7 @@ const ChatBuddyPage: React.FC = () => {
           </TabsList>
           
           <TabsContent value="chat">
-            <CatBuddy />
+            <BotpressChatBuddy />
           </TabsContent>
           
           <TabsContent value="object-detection">

@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/toaster';
-import { Layout } from '@/components/layout/Layout';
+import Layout from '@/components/layout/Layout';
 import HomePage from '@/pages/HomePage';
 import FlashcardsPage from '@/pages/FlashcardsPage';
 import QuizPage from '@/pages/QuizPage';
@@ -11,8 +12,18 @@ import ProgressPage from '@/pages/ProgressPage';
 import ChatBuddyPage from '@/pages/ChatBuddyPage';
 import StoriesPage from '@/pages/StoriesPage';
 import AuthPage from '@/pages/AuthPage';
-import NotFound from '@/pages/NotFoundPage';
+import NotFound from '@/pages/NotFound';
 import DictionaryPage from '@/pages/DictionaryPage';
+
+// Wrapper for HomePage with navigation
+const HomePageWrapper = () => {
+  const navigate = useNavigate();
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+  
+  return <HomePage onNavigate={handleNavigate} />;
+};
 
 function App() {
   const [mounted, setMounted] = useState(false);
@@ -29,7 +40,7 @@ function App() {
     <Router>
       <ThemeProvider defaultTheme="system" storageKey="meow-vocab-theme">
         <Routes>
-          <Route path="/" element={<Layout><HomePage /></Layout>} />
+          <Route path="/" element={<Layout><HomePageWrapper /></Layout>} />
           <Route path="/flashcards" element={<Layout><FlashcardsPage /></Layout>} />
           <Route path="/quizzes" element={<Layout><QuizPage /></Layout>} />
           <Route path="/favorites" element={<Layout><FavoritesPage /></Layout>} />
@@ -47,4 +58,3 @@ function App() {
 }
 
 export default App;
-

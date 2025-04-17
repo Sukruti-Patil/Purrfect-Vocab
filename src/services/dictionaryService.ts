@@ -1,4 +1,3 @@
-
 import { WordData } from '@/components/flashcards/Flashcard';
 
 // Mock Oxford dictionary API as we don't have actual API keys
@@ -28,7 +27,7 @@ export async function searchWord(word: string): Promise<WordData | null> {
   }
 }
 
-// Sample Oxford dictionary words
+// Sample Oxford dictionary words - expanded with more domain-specific entries
 export const oxfordWords: WordData[] = [
   {
     id: "oxford-1",
@@ -63,6 +62,66 @@ export const oxfordWords: WordData[] = [
     example: "She was meticulous in her research.",
     synonyms: ["thorough", "careful", "precise"],
     antonyms: ["careless", "sloppy", "negligent"],
+    category: "Oxford",
+    difficulty: "medium"
+  },
+  {
+    id: "oxford-4",
+    word: "derivative",
+    definition: "Something that is based on another source; a financial security whose value is derived from an underlying asset",
+    partOfSpeech: "noun",
+    pronunciation: "/dɪˈrɪvətɪv/",
+    example: "The film is a derivative of earlier sci-fi classics.",
+    synonyms: ["imitation", "spin-off", "byproduct"],
+    antonyms: ["original", "prototype", "source"],
+    category: "Oxford",
+    difficulty: "medium"
+  },
+  {
+    id: "oxford-5",
+    word: "pandemic",
+    definition: "An outbreak of a disease that occurs over a wide geographic area and affects an exceptionally high proportion of the population",
+    partOfSpeech: "noun",
+    pronunciation: "/pænˈdemɪk/",
+    example: "The world faced a significant pandemic in 2020.",
+    synonyms: ["epidemic", "outbreak", "plague"],
+    antonyms: ["containment", "endemic"],
+    category: "Oxford",
+    difficulty: "medium"
+  },
+  {
+    id: "oxford-6",
+    word: "paradox",
+    definition: "A seemingly absurd or contradictory statement or proposition which when investigated may prove to be well founded or true",
+    partOfSpeech: "noun",
+    pronunciation: "/ˈpærədɒks/",
+    example: "The time travel paradox is a common theme in science fiction.",
+    synonyms: ["contradiction", "absurdity", "enigma"],
+    antonyms: ["consistency", "logic"],
+    category: "Oxford",
+    difficulty: "hard"
+  },
+  {
+    id: "oxford-7",
+    word: "anomaly",
+    definition: "Something that deviates from what is standard, normal, or expected",
+    partOfSpeech: "noun",
+    pronunciation: "/əˈnɒməli/",
+    example: "The scientist discovered an anomaly in the data.",
+    synonyms: ["irregularity", "deviation", "oddity"],
+    antonyms: ["regularity", "standard", "norm"],
+    category: "Oxford",
+    difficulty: "medium"
+  },
+  {
+    id: "oxford-8",
+    word: "ambivalent",
+    definition: "Having mixed feelings or contradictory ideas about something or someone",
+    partOfSpeech: "adjective",
+    pronunciation: "/æmˈbɪvələnt/",
+    example: "She felt ambivalent about her career change.",
+    synonyms: ["conflicted", "uncertain", "undecided"],
+    antonyms: ["decisive", "certain", "resolved"],
     category: "Oxford",
     difficulty: "medium"
   }

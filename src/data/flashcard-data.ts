@@ -1,4 +1,3 @@
-
 import { WordData } from '@/components/flashcards/Flashcard';
 
 export const wordData: WordData[] = [
@@ -121,5 +120,125 @@ export const wordData: WordData[] = [
     difficulty: 'easy',
     synonyms: ['social anxiety', 'apprehension', 'worry'],
     antonyms: ['contentment', 'satisfaction']
+  },
+  {
+    id: '11',
+    word: 'Verbose',
+    partOfSpeech: 'adjective',
+    definition: 'Using or containing more words than needed; wordy.',
+    example: 'His verbose explanation confused rather than clarified the concept.',
+    pronunciation: 'vur-bohs',
+    category: 'academic',
+    difficulty: 'medium',
+    synonyms: ['wordy', 'long-winded', 'prolix', 'garrulous'],
+    antonyms: ['concise', 'brief', 'succinct', 'terse']
+  },
+  {
+    id: '12',
+    word: 'Blockchain',
+    partOfSpeech: 'noun',
+    definition: 'A digital ledger in which transactions are recorded chronologically and publicly.',
+    example: 'Cryptocurrency relies on blockchain technology for security.',
+    pronunciation: 'blok-chayn',
+    category: 'technology',
+    difficulty: 'medium',
+    synonyms: ['distributed ledger', 'digital ledger'],
+    antonyms: []
+  },
+  {
+    id: '13',
+    word: 'Sustainability',
+    partOfSpeech: 'noun',
+    definition: 'The ability to maintain at a certain rate or level; avoiding depletion of natural resources.',
+    example: 'The company emphasized its commitment to environmental sustainability.',
+    pronunciation: 'suh-stey-nuh-bil-i-tee',
+    category: 'science',
+    difficulty: 'medium',
+    synonyms: ['conservation', 'green practices', 'eco-friendly approach'],
+    antonyms: ['wastefulness', 'depletion']
+  },
+  {
+    id: '14',
+    word: 'Procrastinate',
+    partOfSpeech: 'verb',
+    definition: 'To delay or postpone action; to put off doing something.',
+    example: 'He tends to procrastinate when faced with difficult tasks.',
+    pronunciation: 'proh-kras-tuh-neyt',
+    category: 'daily',
+    difficulty: 'easy',
+    synonyms: ['delay', 'stall', 'postpone', 'defer'],
+    antonyms: ['advance', 'expedite', 'hasten']
+  },
+  {
+    id: '15',
+    word: 'Entrepreneurship',
+    partOfSpeech: 'noun',
+    definition: 'The activity of setting up a business, taking financial risks in the hope of profit.',
+    example: 'The university offers courses in entrepreneurship and innovation.',
+    pronunciation: 'on-truh-pruh-nur-ship',
+    category: 'business',
+    difficulty: 'medium',
+    synonyms: ['enterprise', 'business leadership'],
+    antonyms: []
+  },
+  {
+    id: '16',
+    word: 'Metaphor',
+    partOfSpeech: 'noun',
+    definition: 'A figure of speech in which a word or phrase is applied to an object or action that is not literally applicable.',
+    example: 'The phrase "time is a thief" is a metaphor.',
+    pronunciation: 'met-uh-fawr',
+    category: 'literature',
+    difficulty: 'medium',
+    synonyms: ['figure of speech', 'analogy', 'comparison'],
+    antonyms: ['literal expression']
+  },
+  {
+    id: '17',
+    word: 'Ghosting',
+    partOfSpeech: 'noun',
+    definition: 'The practice of suddenly cutting all contact with a person without explanation.',
+    example: 'After three dates, she experienced ghosting when he stopped responding to her messages.',
+    pronunciation: 'goh-sting',
+    category: 'slang',
+    difficulty: 'easy',
+    synonyms: ['cutting off contact', 'disappearing act'],
+    antonyms: ['communication', 'closure']
+  },
+  {
+    id: '18',
+    word: 'Quantum',
+    partOfSpeech: 'noun',
+    definition: 'A discrete quantity of energy proportional in magnitude to the frequency of the radiation it represents.',
+    example: 'Quantum physics explores the behavior of matter at the smallest scales.',
+    pronunciation: 'kwon-tuhm',
+    category: 'science',
+    difficulty: 'hard',
+    synonyms: ['particle', 'unit', 'increment'],
+    antonyms: ['continuum', 'whole']
+  },
+  {
+    id: '19',
+    word: 'Regression',
+    partOfSpeech: 'noun',
+    definition: 'A return to a former or less developed state; a statistical measure of the relationship between variables.',
+    example: 'The psychologist noted regression in the patient's behavior during stressful situations.',
+    pronunciation: 'ri-gresh-uhn',
+    category: 'academic',
+    difficulty: 'hard',
+    synonyms: ['reversion', 'retrogression', 'backsliding'],
+    antonyms: ['progression', 'advancement', 'development']
+  },
+  {
+    id: '20',
+    word: 'Cryptocurrency',
+    partOfSpeech: 'noun',
+    definition: 'A digital currency in which transactions are verified and records maintained by a decentralized system.',
+    example: 'Bitcoin was the first widely adopted cryptocurrency.',
+    pronunciation: 'krip-toh-kur-uhn-see',
+    category: 'technology',
+    difficulty: 'medium',
+    synonyms: ['digital currency', 'virtual currency', 'crypto'],
+    antonyms: ['fiat currency', 'physical money']
   }
 ];

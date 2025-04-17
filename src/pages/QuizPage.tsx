@@ -20,7 +20,7 @@ const flashcardData: WordData[] = [
     synonyms: ["omnipresent", "universal", "worldwide"],
     antonyms: ["rare", "scarce", "uncommon"],
     category: "Academic",
-    difficulty: "advanced"
+    difficulty: "hard"
   },
   {
     id: "2",
@@ -32,7 +32,7 @@ const flashcardData: WordData[] = [
     synonyms: ["process", "procedure", "formula"],
     antonyms: [],
     category: "Technology",
-    difficulty: "intermediate"
+    difficulty: "medium"
   },
   {
     id: "3",
@@ -44,7 +44,7 @@ const flashcardData: WordData[] = [
     synonyms: ["cooperate", "team up", "work together"],
     antonyms: ["compete", "oppose", "work alone"],
     category: "Business",
-    difficulty: "intermediate"
+    difficulty: "medium"
   },
   {
     id: "4",
@@ -56,7 +56,7 @@ const flashcardData: WordData[] = [
     synonyms: ["model", "pattern", "example"],
     antonyms: [],
     category: "Academic",
-    difficulty: "advanced"
+    difficulty: "hard"
   }
 ];
 

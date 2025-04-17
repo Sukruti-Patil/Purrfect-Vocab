@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Volume, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,15 +24,23 @@ interface FlashcardProps {
   wordData: WordData;
   onNext: () => void;
   onPrevious: () => void;
+  autoFlip?: boolean;
 }
 
-export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevious }) => {
+export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevious, autoFlip = false }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showExtraInfo, setShowExtraInfo] = useState(false);
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
   
-  // Now using handleFlip as the direct click handler
+  // Effect to auto-flip if enabled
+  useEffect(() => {
+    if (autoFlip && !isFlipped) {
+      const timer = setTimeout(() => setIsFlipped(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [wordData, autoFlip, isFlipped]);
+  
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };

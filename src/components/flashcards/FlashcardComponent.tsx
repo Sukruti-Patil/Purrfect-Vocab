@@ -6,16 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { wordData } from '@/data/flashcard-data';
+import { oxfordWords } from '@/services/dictionaryService';
 
 interface FlashcardComponentProps {
   previewMode?: boolean;
+  initialWords?: WordData[];
+  autoFlip?: boolean;
 }
 
-export const FlashcardComponent: React.FC<FlashcardComponentProps> = ({ previewMode = false }) => {
+export const FlashcardComponent: React.FC<FlashcardComponentProps> = ({ 
+  previewMode = false, 
+  initialWords = null,
+  autoFlip = false
+}) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [filteredWords, setFilteredWords] = useState<WordData[]>(wordData);
+  const [filteredWords, setFilteredWords] = useState<WordData[]>(initialWords || wordData);
   const { toast } = useToast();
 
   const categories: Category[] = [
@@ -27,6 +34,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = ({ previewM
     { id: 'science', name: 'Science', icon: '🔬', color: 'text-pink-500' },
     { id: 'daily', name: 'Daily Life', icon: '🏠', color: 'text-orange-500' },
     { id: 'slang', name: 'Slang', icon: '🗣️', color: 'text-red-500' },
+    { id: 'oxford', name: 'Oxford', icon: '📘', color: 'text-teal-500' },
   ];
 
   useEffect(() => {
@@ -40,17 +48,34 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = ({ previewM
 
     setIsLoading(true);
     
+    // If we have initialWords, use those instead of filtering
+    if (initialWords) {
+      setFilteredWords(initialWords);
+      setCurrentWordIndex(0);
+      setIsLoading(false);
+      return;
+    }
+    
     // Filter words by category if needed
     if (selectedCategory && selectedCategory !== 'all') {
-      const filtered = wordData.filter(word => word.category === selectedCategory);
-      setFilteredWords(filtered.length > 0 ? filtered : wordData);
+      // For Oxford category, use words from oxfordWords
+      if (selectedCategory === 'oxford') {
+        setFilteredWords(oxfordWords.length > 0 ? oxfordWords : wordData);
+      } else {
+        // Filter by regular category
+        const filtered = wordData.filter(word => 
+          word.category.toLowerCase() === selectedCategory
+        );
+        setFilteredWords(filtered.length > 0 ? filtered : wordData);
+      }
     } else {
-      setFilteredWords(wordData);
+      // Combine regular words and Oxford words
+      setFilteredWords([...wordData, ...oxfordWords]);
     }
     
     setCurrentWordIndex(0);
     setIsLoading(false);
-  }, [selectedCategory, previewMode]);
+  }, [selectedCategory, previewMode, initialWords]);
 
   const handleCategorySelect = (categoryId: string) => {
     setIsLoading(true);
@@ -119,7 +144,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = ({ previewM
 
   return (
     <div className="space-y-6">
-      {!previewMode && (
+      {!previewMode && !initialWords && (
         <CategorySelector 
           categories={categories} 
           selectedCategory={selectedCategory} 
@@ -131,6 +156,7 @@ export const FlashcardComponent: React.FC<FlashcardComponentProps> = ({ previewM
         wordData={filteredWords[currentWordIndex]} 
         onNext={handleNextWord}
         onPrevious={handlePreviousWord}
+        autoFlip={autoFlip}
       />
     </div>
   );

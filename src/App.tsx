@@ -1,127 +1,50 @@
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from '@/components/ui/toaster';
+import { Layout } from '@/components/layout/Layout';
+import HomePage from '@/pages/HomePage';
+import FlashcardsPage from '@/pages/FlashcardsPage';
+import QuizPage from '@/pages/QuizPage';
+import FavoritesPage from '@/pages/FavoritesPage';
+import ProgressPage from '@/pages/ProgressPage';
+import ChatBuddyPage from '@/pages/ChatBuddyPage';
+import StoriesPage from '@/pages/StoriesPage';
+import AuthPage from '@/pages/AuthPage';
+import NotFound from '@/pages/NotFoundPage';
+import DictionaryPage from '@/pages/DictionaryPage';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Index from "./pages/Index";
-import AuthPage from "./pages/AuthPage";
-import NotFound from "./pages/NotFound";
-import ChatBuddyPage from "./pages/ChatBuddyPage";
-import FlashcardsPage from "./pages/FlashcardsPage";
-import StoriesPage from "./pages/StoriesPage";
-import ProgressPage from "./pages/ProgressPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import QuizPage from "./pages/QuizPage";
-import Layout from "./components/layout/Layout";
-import { FavoritesProvider } from "./contexts/FavoritesContext";
+function App() {
+  const [mounted, setMounted] = useState(false);
 
-const App = () => {
-  // Create QueryClient inside the component
-  const [queryClient] = useState(() => new QueryClient());
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-      // Check for user in localStorage
-      const user = localStorage.getItem('purrfect-user');
-      if (user) {
-        const userData = JSON.parse(user);
-        setIsAuthenticated(userData.isLoggedIn === true);
-      }
-      setIsLoading(false);
-    }, []);
-
-    if (isLoading) {
-      // Show loading state
-      return <div className="flex h-screen w-screen items-center justify-center">Loading...</div>;
-    }
-
-    if (!isAuthenticated) {
-      // Redirect to login page if not authenticated
-      return <Navigate to="/auth" />;
-    }
-
-    // If authenticated, show the protected content wrapped in layout
-    return <Layout>{children}</Layout>;
-  };
-
+  if (!mounted) {
+    return <div style={{ visibility: 'hidden' }}></div>;
+  }
+  
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <FavoritesProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<AuthPage />} />
-              <Route 
-                path="/" 
-                element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/chat-buddy" 
-                element={
-                  <ProtectedRoute>
-                    <ChatBuddyPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/flashcards" 
-                element={
-                  <ProtectedRoute>
-                    <FlashcardsPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/stories" 
-                element={
-                  <ProtectedRoute>
-                    <StoriesPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/progress" 
-                element={
-                  <ProtectedRoute>
-                    <ProgressPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/favorites" 
-                element={
-                  <ProtectedRoute>
-                    <FavoritesPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/quizzes" 
-                element={
-                  <ProtectedRoute>
-                    <QuizPage />
-                  </ProtectedRoute>
-                } 
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </FavoritesProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <Router>
+      <ThemeProvider defaultTheme="system" storageKey="meow-vocab-theme">
+        <Routes>
+          <Route path="/" element={<Layout><HomePage /></Layout>} />
+          <Route path="/flashcards" element={<Layout><FlashcardsPage /></Layout>} />
+          <Route path="/quizzes" element={<Layout><QuizPage /></Layout>} />
+          <Route path="/favorites" element={<Layout><FavoritesPage /></Layout>} />
+          <Route path="/progress" element={<Layout><ProgressPage /></Layout>} />
+          <Route path="/chat" element={<Layout><ChatBuddyPage /></Layout>} />
+          <Route path="/stories" element={<Layout><StoriesPage /></Layout>} />
+          <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="*" element={<Layout><NotFound /></Layout>} />
+        </Routes>
+        <Toaster />
+      </ThemeProvider>
+    </Router>
   );
 }
 
 export default App;
+

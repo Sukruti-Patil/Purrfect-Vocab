@@ -9,9 +9,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, BookOpen, Sparkles, Volume2, Save } from 'lucide-react';
+import { Loader2, BookOpen, Sparkles, Volume2, Save, Share2, Download, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { storyData } from '@/data/story-data';
+import confetti from 'canvas-confetti';
 
 interface StoryGeneratorProps {
   previewMode?: boolean;
@@ -34,7 +35,22 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
   const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
   const [theme, setTheme] = useState<string>('');
   const [generatedStory, setGeneratedStory] = useState<Story | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const [savedStories, setSavedStories] = useState<Story[]>([]);
+  const [storySaveTitle, setStorySaveTitle] = useState('');
   const { toast } = useToast();
+
+  // Load saved stories from localStorage
+  useEffect(() => {
+    const savedStoriesJson = localStorage.getItem('saved-stories');
+    if (savedStoriesJson) {
+      try {
+        setSavedStories(JSON.parse(savedStoriesJson));
+      } catch (e) {
+        console.error('Failed to load saved stories:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (previewMode) {
@@ -46,6 +62,7 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
 
   const handleStorySelect = (story: Story) => {
     setSelectedStory(story);
+    setActiveTab('read');
     updateScore(10); // Reward for reading a story
   };
 
@@ -62,33 +79,110 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
     setIsLoading(true);
 
     // In a real app, we would call an API here
-    // For now, we'll simulate an API call with a timeout
+    // For now, we'll generate a more detailed story with a timeout
     setTimeout(() => {
       const words = customWords
         .split(',')
         .map(word => word.trim())
-        .filter(Boolean)
-        .map(word => ({ word, meaning: `Definition for ${word}` }));
+        .filter(Boolean);
+        
+      // Generate a better story with the words integrated
+      const storyTitle = `A Tale of ${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
+      
+      // Create example sentences for each word
+      const wordExamples = words.map(word => {
+        return `"${word}" - As they traveled, they encountered ${word} in unexpected ways.`;
+      }).join(' ');
+      
+      // Intro paragraph
+      const introParagraph = `Once upon a time in a world of ${theme}, there was a fascinating adventure waiting to be discovered. ${words[0]} was the key to unlocking this new world, where ${words[1] || 'magic'} flowed through everything.`;
+      
+      // Middle paragraph with word usage
+      const middleParagraph = `The journey was filled with challenges. ${wordExamples} Each experience taught them something new about themselves and the meaning of ${words[words.length-1] || 'courage'}.`;
+      
+      // Conclusion
+      const conclusionParagraph = `In the end, they realized that the true ${theme} was the friends they made along the way. And with that knowledge, they embraced their ${words[Math.floor(Math.random() * words.length)] || 'destiny'} with open arms.`;
+      
+      // Full story
+      const storyContent = `${introParagraph}\n\n${middleParagraph}\n\n${conclusionParagraph}`;
 
       const newStory: Story = {
         id: `custom-${Date.now()}`,
-        title: `A Tale of ${theme}`,
-        content: `Once upon a time in a world of ${theme}, there was a fascinating adventure. ${words.map(w => w.word).join(', ')} were all part of this exciting journey. [This is where your custom generated story would appear, featuring all the words you specified in a creative narrative about ${theme}.]`,
+        title: storyTitle,
+        content: storyContent,
         difficulty: difficulty,
-        targetWords: words,
+        targetWords: words.map(word => ({ 
+          word, 
+          meaning: `Definition for ${word} (look up in the dictionary to learn more)` 
+        })),
       };
 
       setGeneratedStory(newStory);
       setSelectedStory(newStory);
+      setStorySaveTitle(storyTitle);
       setActiveTab('read');
       setIsLoading(false);
       updateScore(20); // Reward for creating a story
+
+      // Show confetti for creating a story
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
 
       toast({
         title: "Story created!",
         description: "Your custom vocabulary story is ready to read.",
       });
     }, 2000);
+  };
+
+  const saveStory = () => {
+    if (!selectedStory) return;
+    
+    // Create a copy with a proper title
+    const storyToSave = {
+      ...selectedStory,
+      title: storySaveTitle || selectedStory.title
+    };
+    
+    // Add to saved stories
+    const updatedSaved = [...savedStories, storyToSave];
+    setSavedStories(updatedSaved);
+    
+    // Save to localStorage
+    localStorage.setItem('saved-stories', JSON.stringify(updatedSaved));
+    
+    toast({
+      title: "Story saved!",
+      description: "The story has been added to your saved stories.",
+    });
+    
+    updateScore(5); // Small reward for saving a story
+  };
+
+  const handleCopyStory = () => {
+    if (!selectedStory) return;
+    
+    navigator.clipboard.writeText(selectedStory.content)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+        
+        toast({
+          title: "Copied to clipboard",
+          description: "The story has been copied to your clipboard.",
+        });
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+        toast({
+          title: "Copy failed",
+          description: "Could not copy text to clipboard.",
+          variant: "destructive",
+        });
+      });
   };
 
   const speakText = (text: string) => {
@@ -145,10 +239,11 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
   return (
     <Card className="p-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 mb-4">
+        <TabsList className="grid grid-cols-4 mb-4">
           <TabsTrigger value="browse">Browse Stories</TabsTrigger>
           <TabsTrigger value="create">Create Story</TabsTrigger>
           <TabsTrigger value="read" disabled={!selectedStory}>Read Story</TabsTrigger>
+          <TabsTrigger value="saved">Saved Stories</TabsTrigger>
         </TabsList>
         
         <TabsContent value="browse" className="space-y-4">
@@ -253,10 +348,16 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
             <>
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold">{selectedStory.title}</h2>
-                <Button variant="ghost" size="sm" onClick={() => speakText(selectedStory.content)}>
-                  <Volume2 className="h-4 w-4 mr-2" />
-                  Read Aloud
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={() => speakText(selectedStory.content)}>
+                    <Volume2 className="h-4 w-4 mr-1" />
+                    Read Aloud
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleCopyStory}>
+                    {isCopied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
+                    {isCopied ? "Copied!" : "Copy"}
+                  </Button>
+                </div>
               </div>
               
               <Badge className={`
@@ -269,7 +370,9 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
               
               <ScrollArea className="h-[300px] rounded-md border p-4">
                 <div className="space-y-4">
-                  <p className="leading-7">{selectedStory.content}</p>
+                  {selectedStory.content.split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="leading-7">{paragraph}</p>
+                  ))}
                 </div>
               </ScrollArea>
               
@@ -296,11 +399,28 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
                   ))}
                 </div>
                 
-                <div className="flex justify-end mt-4">
-                  <Button variant="outline" className="flex gap-2">
-                    <Save className="h-4 w-4" />
-                    Save to Favorites
-                  </Button>
+                <div className="flex flex-col space-y-2 mt-4">
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      placeholder="Title for saving this story"
+                      value={storySaveTitle}
+                      onChange={(e) => setStorySaveTitle(e.target.value)}
+                    />
+                    <Button variant="outline" className="whitespace-nowrap" onClick={saveStory}>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Story
+                    </Button>
+                  </div>
+                  <div className="flex justify-between">
+                    <Button variant="ghost" className="flex gap-2" onClick={() => window.print()}>
+                      <Download className="h-4 w-4" />
+                      Print/Save PDF
+                    </Button>
+                    <Button variant="ghost" className="flex gap-2">
+                      <Share2 className="h-4 w-4" />
+                      Share Story
+                    </Button>
+                  </div>
                 </div>
               </div>
             </>
@@ -314,6 +434,46 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
               >
                 Browse Stories
               </Button>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="saved" className="space-y-4">
+          <h2 className="text-xl font-bold">Your Saved Stories</h2>
+          {savedStories.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {savedStories.map((story) => (
+                <Card 
+                  key={story.id} 
+                  className={`p-4 cursor-pointer hover:border-primary transition-colors ${selectedStory?.id === story.id ? 'border-primary bg-primary/5' : ''}`}
+                  onClick={() => handleStorySelect(story)}
+                >
+                  <div className="flex gap-3">
+                    <div className="w-16 h-16 rounded bg-muted flex items-center justify-center">
+                      <BookOpen className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold">{story.title}</h3>
+                      <Badge className={`
+                        ${story.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ''}
+                        ${story.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : ''}
+                        ${story.difficulty === 'advanced' ? 'bg-pawpink-light text-pawpink-dark' : ''}
+                      `}>
+                        {story.difficulty}
+                      </Badge>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {story.targetWords.length} vocabulary words
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8 bg-muted rounded-lg text-center">
+              <BookOpen className="h-12 w-12 text-muted-foreground mb-2" />
+              <p className="text-lg font-medium">No saved stories yet</p>
+              <p className="text-muted-foreground">Create or browse stories and save them to see them here</p>
             </div>
           )}
         </TabsContent>

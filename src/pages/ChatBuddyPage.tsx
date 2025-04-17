@@ -2,22 +2,21 @@
 import React, { useState } from 'react';
 import { BotpressChatBuddy } from '@/components/cat-buddy/BotpressChatBuddy';
 import { ObjectDetection } from '@/components/object-detection/ObjectDetection';
-import { CatBuddy } from '@/components/cat-buddy/CatBuddy';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Camera, Cat, BookOpen, Info } from 'lucide-react';
+import { Camera, BookOpen, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
 const ChatBuddyPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('object-detection');
   const { toast } = useToast();
   
   const handleShowTip = () => {
     toast({
       title: "Learning Tip!",
-      description: "Try asking Meowford about vocabulary words or use the camera to identify objects around you!",
+      description: "Use the camera to identify objects around you or try the advanced chat for complex vocabulary learning!",
       duration: 5000,
     });
   };
@@ -38,12 +37,8 @@ const ChatBuddyPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-3">
           <Card className="p-4">
-            <Tabs defaultValue="chat" onValueChange={setActiveTab} value={activeTab}>
+            <Tabs defaultValue="object-detection" onValueChange={setActiveTab} value={activeTab}>
               <TabsList className="mb-4">
-                <TabsTrigger value="chat">
-                  <Cat className="h-4 w-4 mr-2" />
-                  Chat with Meowford
-                </TabsTrigger>
                 <TabsTrigger value="object-detection">
                   <Camera className="h-4 w-4 mr-2" />
                   Object Detection
@@ -53,10 +48,6 @@ const ChatBuddyPage: React.FC = () => {
                   Advanced Chat
                 </TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="chat" className="min-h-[600px]">
-                <CatBuddy />
-              </TabsContent>
               
               <TabsContent value="object-detection" className="min-h-[600px]">
                 <ObjectDetection />
@@ -73,14 +64,6 @@ const ChatBuddyPage: React.FC = () => {
           <Card className="p-4">
             <h3 className="font-bold mb-3">Learning Features</h3>
             <div className="space-y-3">
-              <div className="p-3 bg-muted rounded-lg flex items-start space-x-3">
-                <Cat className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium">Word Lookup</p>
-                  <p className="text-sm text-muted-foreground">Ask Meowford about any word</p>
-                </div>
-              </div>
-              
               <div className="p-3 bg-muted rounded-lg flex items-start space-x-3">
                 <Camera className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div>

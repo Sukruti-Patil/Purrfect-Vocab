@@ -128,6 +128,9 @@ export const WordOfDay: React.FC<WordOfDayProps> = ({ date }) => {
       example: wordData.example,
       category: "Word of the Day",
       difficulty: "medium" as "easy" | "medium" | "hard",
+      // Add required properties for WordData type
+      synonyms: wordData.synonyms || [],
+      antonyms: wordData.antonyms || []
     };
     
     if (!isFavorited) {

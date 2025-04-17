@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,7 +21,8 @@ import {
   Bookmark,
   Clock,
   Tag,
-  User
+  User,
+  Heart
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { storyData, Story } from '@/data/story-data';
@@ -54,10 +54,8 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
   const { toast } = useToast();
   const { addFavorite } = useFavorites();
 
-  // Extract unique categories from stories
   const categories = ['all', ...Array.from(new Set(storyData.map(story => story.category || 'Uncategorized')))];
 
-  // Load saved stories from localStorage
   useEffect(() => {
     const savedStoriesJson = localStorage.getItem('saved-stories');
     if (savedStoriesJson) {
@@ -69,7 +67,6 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
     }
   }, []);
 
-  // Filter stories based on search and category
   useEffect(() => {
     let filtered = storyData;
     
@@ -91,7 +88,6 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
 
   useEffect(() => {
     if (previewMode) {
-      // In preview mode, randomly select a story
       const randomIndex = Math.floor(Math.random() * storyData.length);
       setSelectedStory(storyData[randomIndex]);
     }
@@ -101,7 +97,7 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
     setSelectedStory(story);
     setStorySaveTitle(story.title);
     setActiveTab('read');
-    updateScore(10); // Reward for reading a story
+    updateScore(10);
   };
 
   const handleGenerateStory = () => {
@@ -116,32 +112,24 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
 
     setIsLoading(true);
 
-    // In a real app, we would call an API here
-    // For now, we'll generate a more detailed story with a timeout
     setTimeout(() => {
       const words = customWords
         .split(',')
         .map(word => word.trim())
         .filter(Boolean);
-        
-      // Generate a better story with the words integrated
+      
       const storyTitle = `A Tale of ${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
       
-      // Create example sentences for each word
       const wordExamples = words.map(word => {
         return `"${word}" - As they traveled, they encountered ${word} in unexpected ways.`;
       }).join(' ');
       
-      // Intro paragraph
       const introParagraph = `Once upon a time in a world of ${theme}, there was a fascinating adventure waiting to be discovered. ${words[0]} was the key to unlocking this new world, where ${words[1] || 'magic'} flowed through everything.`;
       
-      // Middle paragraph with word usage
       const middleParagraph = `The journey was filled with challenges. ${wordExamples} Each experience taught them something new about themselves and the meaning of ${words[words.length-1] || 'courage'}.`;
       
-      // Conclusion
       const conclusionParagraph = `In the end, they realized that the true ${theme} was the friends they made along the way. And with that knowledge, they embraced their ${words[Math.floor(Math.random() * words.length)] || 'destiny'} with open arms.`;
       
-      // Full story
       const storyContent = `${introParagraph}\n\n${middleParagraph}\n\n${conclusionParagraph}`;
 
       const newStory: Story = {
@@ -163,15 +151,12 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
       setStorySaveTitle(storyTitle);
       setActiveTab('read');
       setIsLoading(false);
-      updateScore(20); // Reward for creating a story
-
-      // Show confetti for creating a story
+      updateScore(20);
       confetti({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 }
       });
-
       toast({
         title: "Story created!",
         description: "Your custom vocabulary story is ready to read.",
@@ -182,17 +167,14 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
   const saveStory = () => {
     if (!selectedStory) return;
     
-    // Create a copy with a proper title
     const storyToSave = {
       ...selectedStory,
       title: storySaveTitle || selectedStory.title
     };
     
-    // Add to saved stories
     const updatedSaved = [...savedStories, storyToSave];
     setSavedStories(updatedSaved);
     
-    // Save to localStorage
     localStorage.setItem('saved-stories', JSON.stringify(updatedSaved));
     
     toast({
@@ -200,7 +182,7 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
       description: "The story has been added to your saved stories.",
     });
     
-    updateScore(5); // Small reward for saving a story
+    updateScore(5);
   };
 
   const handleCopyStory = () => {
@@ -242,7 +224,11 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
       partOfSpeech: "unknown",
       category: "Story Vocabulary",
       difficulty: "medium" as "easy" | "medium" | "hard",
-      source: selectedStory?.title || "Story"
+      source: selectedStory?.title || "Story",
+      example: "",
+      pronunciation: "",
+      synonyms: [],
+      antonyms: []
     };
     
     addFavorite(wordItem);
@@ -252,19 +238,16 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
       description: `${word.word} has been added to your favorites.`,
     });
     
-    updateScore(2); // Small reward for adding a word to favorites
+    updateScore(2);
   };
 
   const updateScore = (amount: number) => {
-    // Get current score from localStorage
     const currentScoreStr = localStorage.getItem('meowScore');
     const currentScore = currentScoreStr ? parseInt(currentScoreStr, 10) : 100;
     
-    // Update score
     const newScore = currentScore + amount;
     localStorage.setItem('meowScore', newScore.toString());
     
-    // If this component is used on the main page where score state exists
     if (window.dispatchEvent) {
       window.dispatchEvent(new CustomEvent('scoreUpdated', { detail: { newScore } }));
     }
@@ -281,7 +264,6 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({
     });
   };
 
-  // For preview mode, show a simplified version
   if (previewMode) {
     return (
       <div className="space-y-4">

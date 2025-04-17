@@ -101,14 +101,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       case 'chat':
         navigate('/chat');
         break;
-      case 'progress':
-        navigate('/progress');
-        break;
       case 'stories':
         navigate('/stories');
-        break;
-      case 'dictionary':
-        navigate('/dictionary');
         break;
       default:
         navigate('/');

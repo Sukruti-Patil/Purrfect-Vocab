@@ -4,7 +4,7 @@ import { WordOfDay } from '@/components/word-of-day/WordOfDay';
 import { ProgressStats } from '@/components/ui/ProgressStats';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Book, MessageCircle } from 'lucide-react';
+import { ArrowRight, Book, MessageCircle, BookOpen } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (tab: string) => void;
@@ -59,6 +59,19 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   <div>
                     <h3 className="font-medium">Chat with Meowford</h3>
                     <p className="text-sm text-muted-foreground">Your vocabulary buddy</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground" />
+              </div>
+              
+              <div className="flex justify-between items-center p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer" onClick={() => onNavigate('stories')}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <BookOpen className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Read Stories</h3>
+                    <p className="text-sm text-muted-foreground">Learn in context</p>
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />

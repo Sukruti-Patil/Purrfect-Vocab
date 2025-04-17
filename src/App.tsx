@@ -7,12 +7,9 @@ import Layout from '@/components/layout/Layout';
 import HomePage from '@/pages/HomePage';
 import FlashcardsPage from '@/pages/FlashcardsPage';
 import FavoritesPage from '@/pages/FavoritesPage';
-import ProgressPage from '@/pages/ProgressPage';
 import ChatBuddyPage from '@/pages/ChatBuddyPage';
 import StoriesPage from '@/pages/StoriesPage';
-import AuthPage from '@/pages/AuthPage';
 import NotFound from '@/pages/NotFound';
-import DictionaryPage from '@/pages/DictionaryPage';
 import { FavoritesProvider } from '@/contexts/FavoritesContext';
 
 // Wrapper for HomePage with navigation
@@ -44,11 +41,8 @@ function App() {
             <Route path="/" element={<Layout><HomePageWrapper /></Layout>} />
             <Route path="/flashcards" element={<Layout><FlashcardsPage /></Layout>} />
             <Route path="/favorites" element={<Layout><FavoritesPage /></Layout>} />
-            <Route path="/progress" element={<Layout><ProgressPage /></Layout>} />
             <Route path="/chat" element={<Layout><ChatBuddyPage /></Layout>} />
             <Route path="/stories" element={<Layout><StoriesPage /></Layout>} />
-            <Route path="/dictionary" element={<Layout><DictionaryPage /></Layout>} />
-            <Route path="/auth" element={<AuthPage />} />
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
           <Toaster />

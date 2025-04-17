@@ -23,6 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, activeTab, setActiveTab }) =>
     { id: 'favorites', name: 'Favorites', icon: Heart },
     { id: 'chat', name: 'Chat Buddy', icon: MessageCircle },
     { id: 'progress', name: 'Progress', icon: Star },
+    { id: 'dictionary', name: 'Dictionary', icon: BookOpen },
   ];
 
   return (

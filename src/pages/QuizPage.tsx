@@ -6,8 +6,59 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuizComponent } from '@/components/quiz/QuizComponent';
 import { BookOpen, Brain, School, Trophy, Award } from 'lucide-react';
 import { WordData } from '@/components/flashcards/Flashcard';
-import { flashcardData } from '@/data/flashcard-data';
 import { Badge } from '@/components/ui/badge';
+
+// Import sample flashcard data for demonstration
+const flashcardData: WordData[] = [
+  {
+    id: "1",
+    word: "ubiquitous",
+    definition: "present, appearing, or found everywhere",
+    partOfSpeech: "adjective",
+    pronunciation: "yoo-bik-wi-tuhs",
+    example: "Mobile phones are now ubiquitous in modern society.",
+    synonyms: ["omnipresent", "universal", "worldwide"],
+    antonyms: ["rare", "scarce", "uncommon"],
+    category: "Academic",
+    difficulty: "advanced"
+  },
+  {
+    id: "2",
+    word: "algorithm",
+    definition: "a process or set of rules to be followed in calculations or other problem-solving operations",
+    partOfSpeech: "noun",
+    pronunciation: "al-guh-rith-uhm",
+    example: "The search engine uses a sophisticated algorithm to rank results.",
+    synonyms: ["process", "procedure", "formula"],
+    antonyms: [],
+    category: "Technology",
+    difficulty: "intermediate"
+  },
+  {
+    id: "3",
+    word: "collaborate",
+    definition: "to work jointly on an activity or project",
+    partOfSpeech: "verb",
+    pronunciation: "kuh-lab-uh-reyt",
+    example: "Our teams will collaborate on the new initiative.",
+    synonyms: ["cooperate", "team up", "work together"],
+    antonyms: ["compete", "oppose", "work alone"],
+    category: "Business",
+    difficulty: "intermediate"
+  },
+  {
+    id: "4",
+    word: "paradigm",
+    definition: "a typical example or pattern of something",
+    partOfSpeech: "noun",
+    pronunciation: "par-uh-daim",
+    example: "The company's business model became a paradigm for success.",
+    synonyms: ["model", "pattern", "example"],
+    antonyms: [],
+    category: "Academic",
+    difficulty: "advanced"
+  }
+];
 
 const QuizPage: React.FC = () => {
   const [activeQuiz, setActiveQuiz] = useState<string | null>(null);

@@ -6,7 +6,6 @@ import { Toaster } from '@/components/ui/toaster';
 import Layout from '@/components/layout/Layout';
 import HomePage from '@/pages/HomePage';
 import FlashcardsPage from '@/pages/FlashcardsPage';
-import QuizPage from '@/pages/QuizPage';
 import FavoritesPage from '@/pages/FavoritesPage';
 import ProgressPage from '@/pages/ProgressPage';
 import ChatBuddyPage from '@/pages/ChatBuddyPage';
@@ -44,7 +43,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout><HomePageWrapper /></Layout>} />
             <Route path="/flashcards" element={<Layout><FlashcardsPage /></Layout>} />
-            <Route path="/quizzes" element={<Layout><QuizPage /></Layout>} />
             <Route path="/favorites" element={<Layout><FavoritesPage /></Layout>} />
             <Route path="/progress" element={<Layout><ProgressPage /></Layout>} />
             <Route path="/chat" element={<Layout><ChatBuddyPage /></Layout>} />

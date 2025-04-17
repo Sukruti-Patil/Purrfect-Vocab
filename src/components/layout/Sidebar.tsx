@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Book, Heart, Home, MessageCircle, BookOpen, LineChart } from 'lucide-react';
+import { Book, Heart, Home, MessageCircle, BookOpen, LineChart, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -19,6 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, activeTab, setActiveTab }) =>
   const navItems: NavItem[] = [
     { id: 'home', name: 'Home', icon: Home },
     { id: 'flashcards', name: 'Flashcards', icon: Book },
+    { id: 'quiz', name: 'Quiz', icon: Trophy },
     { id: 'favorites', name: 'Favorites', icon: Heart },
     { id: 'chat', name: 'Chat Buddy', icon: MessageCircle },
     { id: 'progress', name: 'Progress', icon: LineChart },

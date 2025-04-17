@@ -24,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (path === '/chat') return 'chat';
     if (path === '/progress') return 'progress';
     if (path === '/stories') return 'stories';
+    if (path === '/quiz') return 'quiz';
     return 'home';
   };
   
@@ -107,6 +108,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         break;
       case 'stories':
         navigate('/stories');
+        break;
+      case 'quiz':
+        navigate('/quiz');
         break;
       default:
         navigate('/');

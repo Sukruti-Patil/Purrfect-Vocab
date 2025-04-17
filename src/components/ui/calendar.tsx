@@ -54,16 +54,22 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        NavigationButton: ({ children, ...buttonProps }) => (
+        prevButton: ({ children, ...buttonProps }) => (
           <button {...buttonProps} className={cn(
             buttonVariants({ variant: "outline" }),
             "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
           )}>
-            {children}
+            <ChevronLeft className="h-4 w-4" />
           </button>
         ),
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        nextButton: ({ children, ...buttonProps }) => (
+          <button {...buttonProps} className={cn(
+            buttonVariants({ variant: "outline" }),
+            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          )}>
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        ),
       }}
       {...props}
     />

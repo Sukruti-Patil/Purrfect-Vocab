@@ -9,28 +9,38 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, BookOpen, Sparkles, Volume2, Save, Share2, Download, Copy, Check } from 'lucide-react';
+import { 
+  Loader2, 
+  BookOpen, 
+  Sparkles, 
+  Volume2, 
+  Save, 
+  Share2, 
+  Download, 
+  Copy, 
+  Check,
+  Bookmark,
+  Clock,
+  Tag,
+  User
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { storyData } from '@/data/story-data';
+import { storyData, Story } from '@/data/story-data';
 import confetti from 'canvas-confetti';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 interface StoryGeneratorProps {
   previewMode?: boolean;
+  initialTab?: string;
 }
 
-interface Story {
-  id: string;
-  title: string;
-  content: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  targetWords: { word: string; meaning: string }[];
-  imageUrl?: string;
-}
-
-export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = false }) => {
+export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ 
+  previewMode = false,
+  initialTab = 'browse'
+}) => {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('browse');
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [customWords, setCustomWords] = useState<string>('');
   const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
   const [theme, setTheme] = useState<string>('');
@@ -38,7 +48,14 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
   const [isCopied, setIsCopied] = useState(false);
   const [savedStories, setSavedStories] = useState<Story[]>([]);
   const [storySaveTitle, setStorySaveTitle] = useState('');
+  const [filteredStories, setFilteredStories] = useState<Story[]>(storyData);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const { toast } = useToast();
+  const { addFavorite } = useFavorites();
+
+  // Extract unique categories from stories
+  const categories = ['all', ...Array.from(new Set(storyData.map(story => story.category || 'Uncategorized')))];
 
   // Load saved stories from localStorage
   useEffect(() => {
@@ -52,6 +69,26 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
     }
   }, []);
 
+  // Filter stories based on search and category
+  useEffect(() => {
+    let filtered = storyData;
+    
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(story => 
+        story.title.toLowerCase().includes(query) || 
+        story.content.toLowerCase().includes(query) ||
+        story.targetWords.some(word => word.word.toLowerCase().includes(query))
+      );
+    }
+    
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(story => story.category === categoryFilter);
+    }
+    
+    setFilteredStories(filtered);
+  }, [searchQuery, categoryFilter]);
+
   useEffect(() => {
     if (previewMode) {
       // In preview mode, randomly select a story
@@ -62,6 +99,7 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
 
   const handleStorySelect = (story: Story) => {
     setSelectedStory(story);
+    setStorySaveTitle(story.title);
     setActiveTab('read');
     updateScore(10); // Reward for reading a story
   };
@@ -111,6 +149,9 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
         title: storyTitle,
         content: storyContent,
         difficulty: difficulty,
+        author: "AI Generated",
+        readTime: "3 min",
+        category: theme.charAt(0).toUpperCase() + theme.slice(1),
         targetWords: words.map(word => ({ 
           word, 
           meaning: `Definition for ${word} (look up in the dictionary to learn more)` 
@@ -193,6 +234,27 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
     }
   };
 
+  const addToFavorites = (word: { word: string, meaning: string }) => {
+    const wordItem = {
+      id: `story-word-${word.word.toLowerCase()}-${Date.now()}`,
+      word: word.word,
+      definition: word.meaning,
+      partOfSpeech: "unknown",
+      category: "Story Vocabulary",
+      difficulty: "medium" as "easy" | "medium" | "hard",
+      source: selectedStory?.title || "Story"
+    };
+    
+    addFavorite(wordItem);
+    
+    toast({
+      title: "Word added to favorites!",
+      description: `${word.word} has been added to your favorites.`,
+    });
+    
+    updateScore(2); // Small reward for adding a word to favorites
+  };
+
   const updateScore = (amount: number) => {
     // Get current score from localStorage
     const currentScoreStr = localStorage.getItem('meowScore');
@@ -206,6 +268,17 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
     if (window.dispatchEvent) {
       window.dispatchEvent(new CustomEvent('scoreUpdated', { detail: { newScore } }));
     }
+  };
+
+  const removeSavedStory = (storyId: string) => {
+    const updatedSaved = savedStories.filter(story => story.id !== storyId);
+    setSavedStories(updatedSaved);
+    localStorage.setItem('saved-stories', JSON.stringify(updatedSaved));
+    
+    toast({
+      title: "Story removed",
+      description: "The story has been removed from your saved stories."
+    });
   };
 
   // For preview mode, show a simplified version
@@ -237,7 +310,7 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
   }
 
   return (
-    <Card className="p-4">
+    <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-4 mb-4">
           <TabsTrigger value="browse">Browse Stories</TabsTrigger>
@@ -247,37 +320,90 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
         </TabsList>
         
         <TabsContent value="browse" className="space-y-4">
-          <h2 className="text-xl font-bold">Vocabulary Stories</h2>
-          <p className="text-muted-foreground">Choose a story to improve your vocabulary in context.</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            {storyData.map((story) => (
-              <Card 
-                key={story.id} 
-                className={`p-4 cursor-pointer hover:border-primary transition-colors ${selectedStory?.id === story.id ? 'border-primary bg-primary/5' : ''}`}
-                onClick={() => handleStorySelect(story)}
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            <div className="flex-1">
+              <Label htmlFor="searchStories" className="mb-2 block">Search Stories</Label>
+              <Input 
+                id="searchStories" 
+                placeholder="Search by title, content or vocabulary words" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="w-full md:w-48">
+              <Label htmlFor="categoryFilter" className="mb-2 block">Category</Label>
+              <select 
+                id="categoryFilter" 
+                className="w-full p-2 border border-border rounded-md bg-background"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
               >
-                <div className="flex gap-3">
-                  <div className="w-16 h-16 rounded bg-muted flex items-center justify-center">
-                    <BookOpen className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{story.title}</h3>
-                    <Badge className={`
-                      ${story.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ''}
-                      ${story.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : ''}
-                      ${story.difficulty === 'advanced' ? 'bg-pawpink-light text-pawpink-dark' : ''}
-                    `}>
-                      {story.difficulty}
-                    </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {story.targetWords.length} vocabulary words
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+          
+          {filteredStories.length === 0 ? (
+            <div className="text-center p-8 bg-muted rounded-lg">
+              <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+              <p className="text-lg font-medium">No stories found</p>
+              <p className="text-muted-foreground">Try changing your search criteria or create a new story</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {filteredStories.map((story) => (
+                <Card 
+                  key={story.id} 
+                  className={`p-4 cursor-pointer hover:border-primary transition-colors ${selectedStory?.id === story.id ? 'border-primary bg-primary/5' : ''}`}
+                  onClick={() => handleStorySelect(story)}
+                >
+                  <div className="flex gap-3">
+                    <div className="w-16 h-16 rounded bg-muted flex items-center justify-center">
+                      <BookOpen className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold">{story.title}</h3>
+                      <Badge className={`
+                        ${story.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ''}
+                        ${story.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : ''}
+                        ${story.difficulty === 'advanced' ? 'bg-pawpink-light text-pawpink-dark' : ''}
+                      `}>
+                        {story.difficulty}
+                      </Badge>
+                      
+                      <div className="flex flex-wrap gap-2 mt-2 text-xs text-muted-foreground">
+                        {story.category && (
+                          <div className="flex items-center">
+                            <Tag className="h-3 w-3 mr-1" />
+                            {story.category}
+                          </div>
+                        )}
+                        {story.readTime && (
+                          <div className="flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {story.readTime}
+                          </div>
+                        )}
+                        {story.author && (
+                          <div className="flex items-center">
+                            <User className="h-3 w-3 mr-1" />
+                            {story.author}
+                          </div>
+                        )}
+                        <div>
+                          {story.targetWords.length} words
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="create" className="space-y-4">
@@ -360,13 +486,34 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
                 </div>
               </div>
               
-              <Badge className={`
-                ${selectedStory.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ''}
-                ${selectedStory.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : ''}
-                ${selectedStory.difficulty === 'advanced' ? 'bg-pawpink-light text-pawpink-dark' : ''}
-              `}>
-                {selectedStory.difficulty}
-              </Badge>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className={`
+                  ${selectedStory.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ''}
+                  ${selectedStory.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : ''}
+                  ${selectedStory.difficulty === 'advanced' ? 'bg-pawpink-light text-pawpink-dark' : ''}
+                `}>
+                  {selectedStory.difficulty}
+                </Badge>
+                
+                {selectedStory.category && (
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {selectedStory.category}
+                  </div>
+                )}
+                {selectedStory.readTime && (
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {selectedStory.readTime}
+                  </div>
+                )}
+                {selectedStory.author && (
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <User className="h-3 w-3 mr-1" />
+                    {selectedStory.author}
+                  </div>
+                )}
+              </div>
               
               <ScrollArea className="h-[300px] rounded-md border p-4">
                 <div className="space-y-4">
@@ -385,14 +532,24 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
                     <Card key={index} className="p-3">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">{word.word}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-6 w-6 p-0" 
-                          onClick={() => speakText(word.word)}
-                        >
-                          <Volume2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 w-6 p-0" 
+                            onClick={() => speakText(word.word)}
+                          >
+                            <Volume2 className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 w-6 p-0"
+                            onClick={() => addToFavorites(word)}
+                          >
+                            <Heart className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                       <p className="text-sm text-muted-foreground">{word.meaning}</p>
                     </Card>
@@ -445,15 +602,29 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
               {savedStories.map((story) => (
                 <Card 
                   key={story.id} 
-                  className={`p-4 cursor-pointer hover:border-primary transition-colors ${selectedStory?.id === story.id ? 'border-primary bg-primary/5' : ''}`}
-                  onClick={() => handleStorySelect(story)}
+                  className="p-4"
                 >
                   <div className="flex gap-3">
                     <div className="w-16 h-16 rounded bg-muted flex items-center justify-center">
                       <BookOpen className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <div>
-                      <h3 className="font-bold">{story.title}</h3>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <h3 className="font-bold">{story.title}</h3>
+                        <div className="flex gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-7 w-7 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeSavedStory(story.id);
+                            }}
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      </div>
                       <Badge className={`
                         ${story.difficulty === 'beginner' ? 'bg-green-100 text-green-800' : ''}
                         ${story.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : ''}
@@ -464,6 +635,14 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
                       <p className="text-xs text-muted-foreground mt-1">
                         {story.targetWords.length} vocabulary words
                       </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2 w-full"
+                        onClick={() => handleStorySelect(story)}
+                      >
+                        Read Story
+                      </Button>
                     </div>
                   </div>
                 </Card>
@@ -478,6 +657,6 @@ export const StoryGenerator: React.FC<StoryGeneratorProps> = ({ previewMode = fa
           )}
         </TabsContent>
       </Tabs>
-    </Card>
+    </div>
   );
 };

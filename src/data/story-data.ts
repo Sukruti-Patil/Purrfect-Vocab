@@ -11,6 +11,9 @@ export interface Story {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   targetWords: StoryWord[];
   imageUrl?: string;
+  author?: string;
+  readTime?: string;
+  category?: string;
 }
 
 export const storyData: Story[] = [
@@ -25,6 +28,9 @@ export const storyData: Story[] = [
     
     Just like the photosynthesis process that gives life to plants, this discovery would bring new life to their understanding of ancient technologies. No one would experience FOMO on this incredible day in archaeological history.`,
     difficulty: 'advanced',
+    author: 'Dr. A. Smith',
+    readTime: '4 min',
+    category: 'History',
     targetWords: [
       { word: 'serendipitous', meaning: 'Occurring or discovered by chance in a happy or beneficial way' },
       { word: 'ubiquitous', meaning: 'Present, appearing, or found everywhere' },
@@ -49,6 +55,9 @@ export const storyData: Story[] = [
     
     "Gardening is such a rewarding hobby," Tom remarked. Sarah nodded in agreement. They both felt content watching butterflies flutter among the flowers as the afternoon gently passed by.`,
     difficulty: 'beginner',
+    author: 'Maria Johnson',
+    readTime: '2 min',
+    category: 'Nature',
     targetWords: [
       { word: 'abundant', meaning: 'Present in great quantity' },
       { word: 'diligently', meaning: 'In a way that shows care and conscientiousness in one\'s work or duties' },
@@ -71,6 +80,9 @@ export const storyData: Story[] = [
     
     Despite facing numerous challenges, Maya remained optimistic. "Disruption isn't easy," she reminded herself, "but it's the only way to create something truly groundbreaking." The upcoming product launch would either validate their hard work or send them back to the drawing board.`,
     difficulty: 'intermediate',
+    author: 'Tech Insights',
+    readTime: '3 min',
+    category: 'Technology',
     targetWords: [
       { word: 'versatile', meaning: 'Able to adapt or be adapted to many different functions or activities' },
       { word: 'ecosystem', meaning: 'A complex network or interconnected system' },
@@ -84,6 +96,62 @@ export const storyData: Story[] = [
       { word: 'disruption', meaning: 'Disturbance or problems which interrupt an event, activity, or process' },
       { word: 'groundbreaking', meaning: 'Breaking new ground; innovative; pioneering' },
       { word: 'validate', meaning: 'Check or prove the validity or accuracy of something' }
+    ]
+  },
+  {
+    id: '4',
+    title: 'Journey Through the Cosmos',
+    content: `The astronomy class gathered under the celestial dome of the planetarium. The professor, known for his eloquent lectures, began speaking about the nebulous formations visible through the telescope.
+
+    "The cosmos is not just a void," he explained. "It's teeming with phenomena that are both ephemeral and eternal." His students listened with rapt attention as he described how stars form from the gravitational pull of matter.
+    
+    One student asked about black holes. "They're enigmatic entities," the professor replied. "Their existence challenges our understanding of physics." He then explained how the event horizon marks the boundary beyond which nothing can escape.
+    
+    The class concluded with a discussion about exoplanets and the possibility of extraterrestrial life. The students left with their minds expanded, contemplating the vast mysteries of the universe that humans were only beginning to unravel.`,
+    difficulty: 'advanced',
+    author: 'Prof. J. Cosmos',
+    readTime: '5 min',
+    category: 'Science',
+    targetWords: [
+      { word: 'celestial', meaning: 'Positioned in or relating to the sky, or outer space as observed in astronomy' },
+      { word: 'eloquent', meaning: 'Fluent or persuasive in speaking or writing' },
+      { word: 'nebulous', meaning: 'In the form of a cloud or haze; hazy' },
+      { word: 'phenomena', meaning: 'Facts or situations that are observed to exist or happen' },
+      { word: 'ephemeral', meaning: 'Lasting for a very short time' },
+      { word: 'eternal', meaning: 'Lasting or existing forever; without end' },
+      { word: 'gravitational', meaning: 'Relating to or caused by gravity' },
+      { word: 'enigmatic', meaning: 'Difficult to interpret or understand; mysterious' },
+      { word: 'exoplanets', meaning: 'Planets that orbit a star outside the solar system' },
+      { word: 'extraterrestrial', meaning: 'Of or from outside the earth or its atmosphere' },
+      { word: 'unravel', meaning: 'Investigate and solve or explain (a problem or mystery)' }
+    ]
+  },
+  {
+    id: '5',
+    title: 'The Culinary Adventure',
+    content: `Marina walked into the bustling farmer's market, her senses immediately inundated with the aroma of fresh produce and baked goods. As an aspiring chef, she was on a quest to find unique ingredients for her new recipe.
+
+    She approached a stand selling exotic spices. The merchant, noticing her interest, began to expound on the history of each spice. Marina was particularly drawn to saffron, known for its subtle yet distinctive flavor.
+    
+    "Cooking is an amalgamation of science and art," Marina often told her friends. She believed that a truly delectable dish required both precision and creativity. Today, she was experimenting with a fusion recipe that would juxtapose traditional Eastern and Western flavors.
+    
+    After collecting all her ingredients, Marina headed home, anticipating the culinary masterpiece she would create. Her kitchen would soon transform into a laboratory of taste, where flavors would harmonize in unexpected ways.`,
+    difficulty: 'intermediate',
+    author: 'Culinary Times',
+    readTime: '3 min',
+    category: 'Cooking',
+    targetWords: [
+      { word: 'bustling', meaning: 'Full of activity' },
+      { word: 'inundated', meaning: 'Overwhelm (someone) with things or people to be dealt with' },
+      { word: 'expound', meaning: 'Present and explain (a theory or idea) systematically and in detail' },
+      { word: 'subtle', meaning: 'So delicate or precise as to be difficult to analyze or describe' },
+      { word: 'distinctive', meaning: 'Characteristic of one person or thing, and so serving to distinguish it from others' },
+      { word: 'amalgamation', meaning: 'The action or process of combining or uniting' },
+      { word: 'delectable', meaning: 'Delicious; very pleasing to the taste' },
+      { word: 'precision', meaning: 'The quality, condition, or fact of being exact and accurate' },
+      { word: 'fusion', meaning: 'The process or result of joining two or more things together to form a single entity' },
+      { word: 'juxtapose', meaning: 'Place or deal with close together for contrasting effect' },
+      { word: 'harmonize', meaning: 'Add notes to (a melody) to produce harmony' }
     ]
   }
 ];

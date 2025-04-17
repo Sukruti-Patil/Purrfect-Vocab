@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Volume, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Volume, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { useFavorites } from '@/contexts/FavoritesContext';
+import { useToast } from '@/hooks/use-toast';
 
 export interface WordData {
   id: string;
@@ -27,6 +29,8 @@ interface FlashcardProps {
 export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevious }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showExtraInfo, setShowExtraInfo] = useState(false);
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { toast } = useToast();
   
   // Now using handleFlip as the direct click handler
   const handleFlip = () => {
@@ -55,6 +59,23 @@ export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevio
       case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
       case 'hard': return 'bg-pawpink-light text-pawpink-dark dark:bg-pawpink-dark dark:text-pawpink-light';
       default: return 'bg-muted text-muted-foreground';
+    }
+  };
+
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isFavorite(wordData.id)) {
+      removeFavorite(wordData.id);
+      toast({
+        title: "Removed from favorites",
+        description: `${wordData.word} has been removed from your favorites.`,
+      });
+    } else {
+      addFavorite(wordData);
+      toast({
+        title: "Added to favorites",
+        description: `${wordData.word} has been added to your favorites.`,
+      });
     }
   };
 
@@ -185,11 +206,43 @@ export const Flashcard: React.FC<FlashcardProps> = ({ wordData, onNext, onPrevio
               <div className="mt-4 text-xs text-muted-foreground flex justify-between items-center">
                 <span>Category: {wordData.category}</span>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add scoring functionality here
+                      toast({
+                        title: "Word marked as difficult",
+                        description: "We'll show this word more often to help you learn it.",
+                      });
+                    }}
+                  >
                     <ThumbsDown className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600">
-                    <ThumbsUp className="h-4 w-4" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add scoring functionality here
+                      toast({
+                        title: "Great job!",
+                        description: "You've mastered this word.",
+                      });
+                    }}
+                  >
+                    <ThumbsUp className="h-4 w-4 text-green-600" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn("h-8 w-8", isFavorite(wordData.id) ? "text-pawpink" : "")}
+                    onClick={handleFavoriteToggle}
+                  >
+                    <Heart className={cn("h-4 w-4", isFavorite(wordData.id) ? "fill-pawpink" : "")} />
                   </Button>
                 </div>
               </div>

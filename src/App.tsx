@@ -12,7 +12,10 @@ import ChatBuddyPage from "./pages/ChatBuddyPage";
 import FlashcardsPage from "./pages/FlashcardsPage";
 import StoriesPage from "./pages/StoriesPage";
 import ProgressPage from "./pages/ProgressPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import QuizPage from "./pages/QuizPage";
 import Layout from "./components/layout/Layout";
+import { FavoritesProvider } from "./contexts/FavoritesContext";
 
 const App = () => {
   // Create QueryClient inside the component
@@ -49,55 +52,73 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/chat-buddy" 
-              element={
-                <ProtectedRoute>
-                  <ChatBuddyPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/flashcards" 
-              element={
-                <ProtectedRoute>
-                  <FlashcardsPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/stories" 
-              element={
-                <ProtectedRoute>
-                  <StoriesPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/progress" 
-              element={
-                <ProtectedRoute>
-                  <ProgressPage />
-                </ProtectedRoute>
-              } 
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <FavoritesProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<AuthPage />} />
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/chat-buddy" 
+                element={
+                  <ProtectedRoute>
+                    <ChatBuddyPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/flashcards" 
+                element={
+                  <ProtectedRoute>
+                    <FlashcardsPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/stories" 
+                element={
+                  <ProtectedRoute>
+                    <StoriesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/progress" 
+                element={
+                  <ProtectedRoute>
+                    <ProgressPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/favorites" 
+                element={
+                  <ProtectedRoute>
+                    <FavoritesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/quizzes" 
+                element={
+                  <ProtectedRoute>
+                    <QuizPage />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </FavoritesProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

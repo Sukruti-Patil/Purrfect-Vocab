@@ -11,6 +11,7 @@ import ProgressPage from '@/pages/ProgressPage';
 import ChatBuddyPage from '@/pages/ChatBuddyPage';
 import StoriesPage from '@/pages/StoriesPage';
 import QuizPage from '@/pages/QuizPage';
+import SocialPage from '@/pages/SocialPage';
 import NotFound from '@/pages/NotFound';
 import { FavoritesProvider } from '@/contexts/FavoritesContext';
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="/chat" element={<Layout><ChatBuddyPage /></Layout>} />
             <Route path="/stories" element={<Layout><StoriesPage /></Layout>} />
             <Route path="/quiz" element={<Layout><QuizPage /></Layout>} />
+            <Route path="/social" element={<Layout><SocialPage /></Layout>} />
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
           <Toaster />

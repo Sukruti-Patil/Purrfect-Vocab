@@ -1,3 +1,4 @@
+
 import { WordData } from '@/components/flashcards/Flashcard';
 
 export const wordData: WordData[] = [
@@ -222,7 +223,7 @@ export const wordData: WordData[] = [
     word: 'Regression',
     partOfSpeech: 'noun',
     definition: 'A return to a former or less developed state; a statistical measure of the relationship between variables.',
-    example: 'The psychologist noted regression in the patient's behavior during stressful situations.',
+    example: 'The psychologist noted regression in the patient\'s behavior during stressful situations.',
     pronunciation: 'ri-gresh-uhn',
     category: 'academic',
     difficulty: 'hard',

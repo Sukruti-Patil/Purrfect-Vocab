@@ -1,26 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, Trophy, RefreshCw, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
 import { oxfordWords } from '@/services/dictionaryService';
+import { GrammarQuestionDisplay } from './GrammarQuestion';
+import { DifficultySelector } from './DifficultySelector';
+import { GrammarQuestion } from './types';
 
-interface GrammarQuestion {
-  id: string;
-  sentence: string;
-  blankWord: string;
-  options?: string[];
-  hint?: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  explanation: string;
-  grammarRule: string;
-}
-
-// Sample grammar questions
+// Sample grammar questions remain the same
 const grammarQuestions: GrammarQuestion[] = [
   {
     id: 'g1',
@@ -104,13 +91,12 @@ const grammarQuestions: GrammarQuestion[] = [
   }
 ];
 
-// Create additional questions based on Oxford dictionary words
+// Function to generate additional questions remains the same
 const generateAdditionalQuestions = (): GrammarQuestion[] => {
   const grammarWords = oxfordWords.filter(word => word.category === 'Grammar');
   
   return grammarWords.map(word => {
     const options = [word.word];
-    // Add 3 random synonyms or words from the same category
     const allWords = oxfordWords.map(w => w.word).filter(w => w !== word.word);
     while (options.length < 4 && allWords.length > 0) {
       const randomIndex = Math.floor(Math.random() * allWords.length);
@@ -118,7 +104,6 @@ const generateAdditionalQuestions = (): GrammarQuestion[] => {
       allWords.splice(randomIndex, 1);
     }
     
-    // Shuffle options
     const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
     
     return {
@@ -146,7 +131,6 @@ export const FillInTheBlanks: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Combine predefined questions with generated ones
     const additionalQuestions = generateAdditionalQuestions();
     setAllQuestions([...grammarQuestions, ...additionalQuestions]);
   }, []);
@@ -188,7 +172,7 @@ export const FillInTheBlanks: React.FC = () => {
     if (isAnswerCorrect) {
       setScore(prevScore => prevScore + 1);
       
-      if (Math.random() > 0.7) { // occasionally trigger confetti
+      if (Math.random() > 0.7) {
         confetti({
           particleCount: 100,
           spread: 70,
@@ -201,7 +185,6 @@ export const FillInTheBlanks: React.FC = () => {
         description: currentQuestion.explanation,
       });
       
-      // Update learning streak and score
       updateScore(10);
     } else {
       toast({
@@ -220,39 +203,12 @@ export const FillInTheBlanks: React.FC = () => {
   const updateScore = (amount: number) => {
     const currentScoreStr = localStorage.getItem('meowScore');
     const currentScore = currentScoreStr ? parseInt(currentScoreStr, 10) : 100;
-    
     const newScore = currentScore + amount;
     localStorage.setItem('meowScore', newScore.toString());
     
     if (window.dispatchEvent) {
       window.dispatchEvent(new CustomEvent('scoreUpdated', { detail: { newScore } }));
     }
-  };
-
-  const formatSentence = (sentence: string, answer: string) => {
-    const parts = sentence.split('___');
-    
-    if (isSubmitted) {
-      return (
-        <>
-          {parts[0]}
-          <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-            {userAnswer || "[blank]"}
-          </span>
-          {parts[1]}
-        </>
-      );
-    }
-    
-    return (
-      <>
-        {parts[0]}
-        <span className="border-b-2 border-dashed border-primary inline-block min-w-16 text-center">
-          {answer}
-        </span>
-        {parts[1]}
-      </>
-    );
   };
 
   if (!currentQuestion) {
@@ -270,20 +226,7 @@ export const FillInTheBlanks: React.FC = () => {
           <h2 className="text-xl font-bold">Fill in the Blanks</h2>
           <p className="text-muted-foreground">Practice your grammar by completing sentences</p>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground">Difficulty:</span>
-          <select 
-            className="px-2 py-1 rounded border" 
-            value={difficultyFilter}
-            onChange={(e) => setDifficultyFilter(e.target.value as any)}
-          >
-            <option value="all">All Levels</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </div>
+        <DifficultySelector value={difficultyFilter} onChange={setDifficultyFilter} />
       </div>
       
       <div className="flex items-center gap-2">
@@ -300,94 +243,15 @@ export const FillInTheBlanks: React.FC = () => {
         </Badge>
       </div>
       
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Complete the sentence</CardTitle>
-          <CardDescription>
-            Fill in the blank with the correct word
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-lg mb-6 leading-relaxed">
-            {formatSentence(currentQuestion.sentence, userAnswer)}
-          </p>
-          
-          {!isSubmitted && (
-            <>
-              {currentQuestion.options ? (
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  {currentQuestion.options.map((option, index) => (
-                    <Button
-                      key={index}
-                      variant={userAnswer === option ? "default" : "outline"}
-                      className="h-12"
-                      onClick={() => setUserAnswer(option)}
-                    >
-                      {option}
-                    </Button>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-4">
-                  <Input
-                    placeholder="Type your answer here..."
-                    value={userAnswer}
-                    onChange={e => setUserAnswer(e.target.value)}
-                    className="mb-4"
-                  />
-                </div>
-              )}
-              
-              {currentQuestion.hint && (
-                <div className="mt-4 p-3 bg-muted rounded flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">{currentQuestion.hint}</p>
-                </div>
-              )}
-            </>
-          )}
-          
-          {isSubmitted && (
-            <div className={`mt-4 p-4 rounded-md ${isCorrect ? 'bg-green-100' : 'bg-red-100'}`}>
-              <div className="flex items-start gap-3">
-                {isCorrect ? (
-                  <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                ) : (
-                  <X className="h-6 w-6 text-red-600 flex-shrink-0 mt-1" />
-                )}
-                <div>
-                  <p className="font-medium mb-1">
-                    {isCorrect ? 'Correct!' : `The correct answer is "${currentQuestion.blankWord}"`}
-                  </p>
-                  <p className="text-sm mb-2">{currentQuestion.explanation}</p>
-                  <div className="text-sm bg-white bg-opacity-50 p-2 rounded">
-                    <strong>Grammar Rule:</strong> {currentQuestion.grammarRule}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          {!isSubmitted ? (
-            <Button
-              onClick={handleSubmit}
-              disabled={!userAnswer}
-              className="w-full"
-            >
-              Check Answer
-            </Button>
-          ) : (
-            <Button
-              onClick={handleNextQuestion}
-              className="w-full"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Next Question
-            </Button>
-          )}
-        </CardFooter>
-      </Card>
+      <GrammarQuestionDisplay
+        question={currentQuestion}
+        userAnswer={userAnswer}
+        isSubmitted={isSubmitted}
+        isCorrect={isCorrect}
+        onAnswerChange={setUserAnswer}
+        onSubmit={handleSubmit}
+        onNextQuestion={handleNextQuestion}
+      />
     </div>
   );
 };
